@@ -7,6 +7,7 @@ import android.net.http.SslError;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -17,15 +18,19 @@ public class CaptureWebViewPoc extends Activity {
     private static final String TAG = CaptureWebViewPoc.class.getSimpleName();
 
     // This is the base URL for your Capture domain
-    private static final String CAPTURE_URL_BASE = "https://webview-poc.dev.janraincapture.com";
+    private static final String CAPTURE_BASE_URL = "https://webview-poc.dev.janraincapture.com";
     private WebView mWebView;
-    private Button mStartButton;
+    private Button mSigninButton;
+    private Button mEditButton;
+    private Button mLinkButton;
+    
+    private String mAccessToken = "8wtrh656fkk6x72h";
 
     /* This URL serves as a sentinel. Capture redirects to it and it is watched for in
      * shouldOverrideUrlLoading. When reached, the token is extracted and the WebView may be closed.
      * Not that *it is not a real URL*, and can't be loaded, it is just a convenient URL to use as a
      * sentinel. */
-    private final String mSentinelUrl = CAPTURE_URL_BASE + "/webview-poc/capture_finish";
+    private final String mSentinelUrl = CAPTURE_BASE_URL + "/webview-poc/capture_finish";
 
     /* This URL hits the signin_mobile start point in Capture UI which shows a mobile-optimized sign-in
      * screen. It takes three parameters:
@@ -34,15 +39,37 @@ public class CaptureWebViewPoc extends Activity {
      *  - response_type: loaded with 'token' to configure an access token to be included in the fragment of
      *    the redirect URI.
       */
-    private final String captureStartUrl = CAPTURE_URL_BASE + "/oauth/signin_mobile?" +
+    private final String CAPTURE_SIGNIN_URL = CAPTURE_BASE_URL + "/oauth/signin_mobile?" +
             "redirect_uri=" + mSentinelUrl +
             "&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
             "&response_type=token";
 
+    /* This URL loads the profile editing page */
+    private final String CAPTURE_EDIT_PROFILE_URL_FORMAT = CAPTURE_BASE_URL + 
+            "/oauth/profile_mobile_general?" +
+            "access_token=%s" +
+            "&callback=$m.members.HandleProfileSave&" +
+            "client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
+            "&xd_receiver=" +
+            "&flags=stay_in_window";
+
+    /* This URL loads the account linking page */
+    private final String CAPTURE_LINK_ACCOUNTS_URL_FORMAT = CAPTURE_BASE_URL + 
+            "/oauth/profile_mobile_networks?" +
+            "access_token=%s" +
+            "&callback=$m.members.HandleProfileSave&" +
+            "client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
+            "&xd_receiver=" +
+            "&flags=stay_in_window";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
+        // This just sets up a progress indicator for our demo
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
+        setProgressBarIndeterminate(true);
+
         Log.d(TAG, "[onCreate]");
         
         setContentView(R.layout.main);
@@ -51,10 +78,25 @@ public class CaptureWebViewPoc extends Activity {
         mWebView.setWebViewClient(mWebViewClient); // watches URLs as they load
         mWebView.getSettings().setJavaScriptEnabled(true); // may not be necessary, should be on by default
 
-        mStartButton = (Button) findViewById(R.id.start_button);
-        mStartButton.setOnClickListener(new View.OnClickListener() {
+        mSigninButton = (Button) findViewById(R.id.start_button);
+        mEditButton = (Button) findViewById(R.id.edit_button);
+        mLinkButton = (Button) findViewById(R.id.link_button);
+
+        mSigninButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                mWebView.loadUrl(captureStartUrl);
+                mWebView.loadUrl(CAPTURE_SIGNIN_URL);
+            }
+        });
+
+        mEditButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                mWebView.loadUrl(String.format(CAPTURE_EDIT_PROFILE_URL_FORMAT, mAccessToken));
+            }
+        });
+
+        mLinkButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                mWebView.loadUrl(String.format(CAPTURE_LINK_ACCOUNTS_URL_FORMAT, mAccessToken));
             }
         });
     }
@@ -84,12 +126,21 @@ public class CaptureWebViewPoc extends Activity {
             if (isSentinelUrl(url)) {
                 processSentinelUrl(url);
                 view.stopLoading();
+            } else {
+                setProgressBarIndeterminateVisibility(true);
             }
         }
 
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            Log.d(TAG, "[onPageFinished]: " + url);
+            setProgressBarIndeterminateVisibility(false);
+        }
+
         /*
-         * Just some error loggers useful for debugging
-         */
+        * Just some error loggers useful for debugging
+        */
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             Log.d(TAG, "[onReceivedError]");
@@ -131,6 +182,7 @@ public class CaptureWebViewPoc extends Activity {
 
         String message = "Token: " + token;
         logAndToast(message);
+        mAccessToken = token;
     }
 
     private boolean isSentinelUrl(String url) {
