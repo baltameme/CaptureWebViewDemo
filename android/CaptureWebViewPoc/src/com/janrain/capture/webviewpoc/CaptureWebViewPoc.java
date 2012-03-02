@@ -21,6 +21,7 @@ public class CaptureWebViewPoc extends Activity {
     private static final String CAPTURE_BASE_URL = "https://webview-poc.dev.janraincapture.com";
     private WebView mWebView;
     private Button mSigninButton;
+    private Button mRegisterButton;
     private Button mEditButton;
     private Button mLinkButton;
     
@@ -48,8 +49,8 @@ public class CaptureWebViewPoc extends Activity {
     private final String CAPTURE_EDIT_PROFILE_URL_FORMAT = CAPTURE_BASE_URL + 
             "/oauth/profile_mobile_general?" +
             "access_token=%s" +
-            "&callback=$m.members.HandleProfileSave&" +
-            "client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
+            "&callback=$m.members.HandleProfileSave" +
+            "&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
             "&xd_receiver=" +
             "&flags=stay_in_window";
 
@@ -57,10 +58,20 @@ public class CaptureWebViewPoc extends Activity {
     private final String CAPTURE_LINK_ACCOUNTS_URL_FORMAT = CAPTURE_BASE_URL + 
             "/oauth/profile_mobile_networks?" +
             "access_token=%s" +
-            "&callback=$m.members.HandleProfileSave&" +
-            "client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
+            "&callback=$m.members.HandleProfileSave" +
+            "&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
             "&xd_receiver=" +
             "&flags=stay_in_window";
+    
+    private final String CAPTURE_LEGACY_REGISTER_URL = CAPTURE_BASE_URL +
+            "/oauth/legacy_register_mobile?" +
+            "client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
+            "&xd_receiver=" +
+            "&flags=stay_in_window" +
+            "&response_type=token" +
+            "&callback=" +
+            "&redirect_uri=" + mSentinelUrl;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,9 +89,16 @@ public class CaptureWebViewPoc extends Activity {
         mWebView.setWebViewClient(mWebViewClient); // watches URLs as they load
         mWebView.getSettings().setJavaScriptEnabled(true); // may not be necessary, should be on by default
 
+        mRegisterButton = (Button) findViewById(R.id.register_button);
         mSigninButton = (Button) findViewById(R.id.start_button);
         mEditButton = (Button) findViewById(R.id.edit_button);
         mLinkButton = (Button) findViewById(R.id.link_button);
+
+        mRegisterButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                mWebView.loadUrl(CAPTURE_LEGACY_REGISTER_URL);
+            }
+        });
 
         mSigninButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -138,9 +156,7 @@ public class CaptureWebViewPoc extends Activity {
             setProgressBarIndeterminateVisibility(false);
         }
 
-        /*
-        * Just some error loggers useful for debugging
-        */
+        /* An error logger useful for debugging */
         @Override
         public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
             Log.d(TAG, "[onReceivedError]");
@@ -149,8 +165,7 @@ public class CaptureWebViewPoc extends Activity {
             logAndToast(message);
         }
 
-        /*
-         * Just some error loggers useful for debugging
+        /* An error logger useful for debugging
          * NOTE that this may automatically proceed when the WebView encounters an invalid cert.
          * DO NOT DEPLOY THIS METHOD TO PRODUCTION
          */

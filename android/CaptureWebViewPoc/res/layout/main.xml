@@ -12,6 +12,14 @@
         >
 
         <Button
+            android:id="@+id/register_button"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Register"
+            />
+
+        <Button
             android:id="@+id/start_button"
             android:layout_height="wrap_content"
             android:layout_width="0dp"
@@ -24,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:text="Edit Profile"
+            android:text="Profile"
             />
 
         <Button
@@ -32,7 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:text="Link Account"
+            android:text="Link"
             />
 
     </LinearLayout>
