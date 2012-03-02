@@ -68,7 +68,8 @@
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accessToken"];
 
     NSURL *url =
-            [NSURL URLWithString:@"https://webview-poc.dev.janraincapture.com/oauth/signin_mobile?redirect_uri=https://redirect.com&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh&response_type=token"];
+            [NSURL URLWithString:@"https://webview-poc.dev.janraincapture.com/oauth/signin_mobile?redirect_uri=https://mobilefinish.janraincapture.com&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh&response_type=token"];
+//    [NSURL URLWithString:@"https://webview-poc.dev.janraincapture.com/oauth/signin_mobile?redirect_uri=https://redirect.com&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh&response_type=token"];
 
     NSURLRequest *req = [NSURLRequest requestWithURL:url];
 
@@ -111,7 +112,7 @@
 {
     DLog(@"%@", [[request URL] absoluteString]);
 
-    if ([[[request URL] absoluteString] hasPrefix:@"https://redirect.com"])
+    if ([[[request URL] absoluteString] hasPrefix:@"https://mobilefinish.janraincapture.com"])
     {
         NSString *urlString = [[request URL] absoluteString];
 
