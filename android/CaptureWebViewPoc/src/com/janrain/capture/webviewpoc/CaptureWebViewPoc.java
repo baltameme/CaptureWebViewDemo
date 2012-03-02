@@ -12,6 +12,7 @@ import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class CaptureWebViewPoc extends Activity {
@@ -24,6 +25,7 @@ public class CaptureWebViewPoc extends Activity {
     private Button mRegisterButton;
     private Button mEditButton;
     private Button mLinkButton;
+    private TextView mAccessTokenView;
     
     private String mAccessToken = "8wtrh656fkk6x72h";
 
@@ -62,7 +64,8 @@ public class CaptureWebViewPoc extends Activity {
             "&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
             "&xd_receiver=" +
             "&flags=stay_in_window";
-    
+
+    /* This URL loads the username and password registration page */
     private final String CAPTURE_LEGACY_REGISTER_URL = CAPTURE_BASE_URL +
             "/oauth/legacy_register_mobile?" +
             "client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
@@ -73,26 +76,31 @@ public class CaptureWebViewPoc extends Activity {
             "&redirect_uri=" + mSentinelUrl;
 
 
+    /**
+     * This is glue code to set up demo's chrome
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // This just sets up a progress indicator for our demo
+        // Set up a progress indicator for our demo
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setProgressBarIndeterminate(true);
 
         Log.d(TAG, "[onCreate]");
         
         setContentView(R.layout.main);
-        
+
         mWebView = (WebView) findViewById(R.id.capture_webview);
         mWebView.setWebViewClient(mWebViewClient); // watches URLs as they load
         mWebView.getSettings().setJavaScriptEnabled(true); // may not be necessary, should be on by default
+        mWebView.getSettings().setSavePassword(false);
 
         mRegisterButton = (Button) findViewById(R.id.register_button);
         mSigninButton = (Button) findViewById(R.id.start_button);
         mEditButton = (Button) findViewById(R.id.edit_button);
         mLinkButton = (Button) findViewById(R.id.link_button);
+        mAccessTokenView = (TextView) findViewById(R.id.token_view);
 
         mRegisterButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -117,8 +125,13 @@ public class CaptureWebViewPoc extends Activity {
                 mWebView.loadUrl(String.format(CAPTURE_LINK_ACCOUNTS_URL_FORMAT, mAccessToken));
             }
         });
+
+        updateAccessTokenView();
     }
-    
+
+    /**
+     * This WebViewClient monitors URLs as they load in the webview, and checks for sentinel URLs
+     */
     private WebViewClient mWebViewClient = new WebViewClient() {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -174,7 +187,7 @@ public class CaptureWebViewPoc extends Activity {
             Log.d(TAG, "[onReceivedSslError]");
 
             String message = error.toString();
-            logAndToast(message);
+            Log.e(TAG, message);
             handler.proceed();
         }
     };
@@ -184,6 +197,11 @@ public class CaptureWebViewPoc extends Activity {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
+    /**
+     * This parses the Capture access token out of the sentinel URL
+     * @param url
+     *  The sentinel URL to parse the access token from.
+     */
     private void processSentinelUrl(String url) {
         // Extract the access token from the fragment of the URL passed in here
         // Example URL:
@@ -198,6 +216,14 @@ public class CaptureWebViewPoc extends Activity {
         String message = "Token: " + token;
         logAndToast(message);
         mAccessToken = token;
+        updateAccessTokenView();
+    }
+
+    /**
+     * Updates a piece of demo chrome to display the access token
+     */
+    private void updateAccessTokenView() {
+        mAccessTokenView.setText("Access token: " + mAccessToken);
     }
 
     private boolean isSentinelUrl(String url) {
