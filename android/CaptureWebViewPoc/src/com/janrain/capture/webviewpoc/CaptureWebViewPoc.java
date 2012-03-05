@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.webkit.CookieManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -27,7 +28,7 @@ public class CaptureWebViewPoc extends Activity {
     private Button mLinkButton;
     private TextView mAccessTokenView;
     
-    private String mAccessToken = "8wtrh656fkk6x72h";
+    private String mAccessToken = "";
 
     /* This URL serves as a sentinel. Capture redirects to it and it is watched for in
      * shouldOverrideUrlLoading. When reached, the token is extracted and the WebView may be closed.
@@ -95,6 +96,7 @@ public class CaptureWebViewPoc extends Activity {
         mWebView.setWebViewClient(mWebViewClient); // watches URLs as they load
         mWebView.getSettings().setJavaScriptEnabled(true); // may not be necessary, should be on by default
         mWebView.getSettings().setSavePassword(false);
+        CookieManager.getInstance().removeAllCookie(); // Nuke any IDP cookies
 
         mRegisterButton = (Button) findViewById(R.id.register_button);
         mSigninButton = (Button) findViewById(R.id.start_button);
