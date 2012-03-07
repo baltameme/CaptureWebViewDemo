@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <script>
+            var access_token = window.location.hash.split("=")[1];
+            window.external.getProfile(access_token);
+            window.external.setWidth(959);
+            window.external.setHeight(481);
+            window.external.setStatus('JSON response from Capture');
+        </script>
+    </head>
+    <body>
+        loading ...
+    </body>
+</html>

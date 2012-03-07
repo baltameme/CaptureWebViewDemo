@@ -1,0 +1,9 @@
+C:\Users\engage\AppData\Local\Temporary Projects\WindowsFormsApplication1\bin\Debug\JanrainPOCApp.exe
+C:\Users\engage\AppData\Local\Temporary Projects\WindowsFormsApplication1\bin\Debug\JanrainPOCApp.pdb
+C:\Users\engage\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\ResolveAssemblyReference.cache
+C:\Users\engage\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\Janrain.Properties.Resources.resources
+C:\Users\engage\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\GenerateResource.read.1.tlog
+C:\Users\engage\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\GenerateResource.write.1.tlog
+C:\Users\engage\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\JanrainPOCApp.exe
+C:\Users\engage\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\JanrainPOCApp.pdb
+C:\Users\engage\AppData\Local\Temporary Projects\WindowsFormsApplication1\obj\x86\Debug\WindowsFormsApplication1.Form1.resources
