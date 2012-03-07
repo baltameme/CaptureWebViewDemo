@@ -1,9 +1,0 @@
-Z:\chad On My Mac\Documents\Visual Studio 2010\Projects\Janrain Legacy Capture POC\Janrain POC\bin\Debug\Janrain Legacy Capture POC.exe
-Z:\chad On My Mac\Documents\Visual Studio 2010\Projects\Janrain Legacy Capture POC\Janrain POC\bin\Debug\Janrain Legacy Capture POC.pdb
-Z:\chad On My Mac\Documents\Visual Studio 2010\Projects\Janrain Legacy Capture POC\Janrain POC\obj\x86\Debug\ResolveAssemblyReference.cache
-Z:\chad On My Mac\Documents\Visual Studio 2010\Projects\Janrain Legacy Capture POC\Janrain POC\obj\x86\Debug\WindowsFormsApplication1.Form1.resources
-Z:\chad On My Mac\Documents\Visual Studio 2010\Projects\Janrain Legacy Capture POC\Janrain POC\obj\x86\Debug\Janrain.Properties.Resources.resources
-Z:\chad On My Mac\Documents\Visual Studio 2010\Projects\Janrain Legacy Capture POC\Janrain POC\obj\x86\Debug\GenerateResource.read.1.tlog
-Z:\chad On My Mac\Documents\Visual Studio 2010\Projects\Janrain Legacy Capture POC\Janrain POC\obj\x86\Debug\GenerateResource.write.1.tlog
-Z:\chad On My Mac\Documents\Visual Studio 2010\Projects\Janrain Legacy Capture POC\Janrain POC\obj\x86\Debug\Janrain Legacy Capture POC.exe
-Z:\chad On My Mac\Documents\Visual Studio 2010\Projects\Janrain Legacy Capture POC\Janrain POC\obj\x86\Debug\Janrain Legacy Capture POC.pdb
