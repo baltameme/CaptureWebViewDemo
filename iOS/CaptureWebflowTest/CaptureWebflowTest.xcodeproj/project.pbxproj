@@ -38,6 +38,7 @@
 		9F93F30014F2D41500C796FA /* SignInWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignInWebViewController.h; sourceTree = "<group>"; };
 		9F93F30114F2D41500C796FA /* SignInWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignInWebViewController.m; sourceTree = "<group>"; };
 		9F93F30214F2D41500C796FA /* SignInWebViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SignInWebViewController.xib; sourceTree = "<group>"; };
+		C14248A78C743F26E78F4BE7 /* debug_log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = debug_log.h; sourceTree = "<group>"; };
 		C42E923AA945BFB1037FC8DE /* CaptureWebflowTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CaptureWebflowTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C42E923AA945BFB1037FC8E7 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		C42E923AA945BFB1037FC8E9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -116,6 +117,7 @@
 		C42E923AA945BFB1037FC8ED /* CaptureWebflowTest */ = {
 			isa = PBXGroup;
 			children = (
+				C14248A78C743F26E78F4BE7 /* debug_log.h */,
 				C42E923AA945BFB1037FC8FD /* ViewController.m */,
 				C42E923AA945BFB1037FC8FC /* ViewController.h */,
 				C42E923AA945BFB1037FC8FA /* MainStoryboard.storyboard */,

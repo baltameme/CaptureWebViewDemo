@@ -6,16 +6,34 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#define DEBUG
-#ifdef DEBUG
-#define DLog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-#else
-#define DLog(...)
-#endif
-
-#define ALog(fmt, ...) NSLog((@"%s [Line %d] " fmt), __PRETTY_FUNCTION__, __LINE__, ##__VA_ARGS__)
-
+#import "debug_log.h"
 #import "SignInWebViewController.h"
+
+/*
+ * To run this demo on your own Capture app edit the captureUiDomain and captureApidClient constants to correspond to
+ * your own Capture instance and contact your deployment engineer to set up the mobile optimized screens.
+ */
+
+/**
+ * This is the fully qualified domain name of your Capture UI server.
+ */
+static NSString *const captureUiDomain = @"webview-poc.dev.janraincapture.com";
+
+/**
+ * This is the Capture apid client ID.
+ */
+static NSString *const captureApidClientId = @"zc7tx83fqy68mper69mxbt5dfvd7c2jh";
+
+/**
+ * This is an arbitrary sentinel URL that will be used as the redirect parameter and be monitored for redirects to by
+ * the UIWebView delegate.
+*/
+static NSString *const sentinelUrl = @"https://mobilefinish.janraincapture.com";
+
+/**
+ * This is the path the to the sign in web page optimized for mobile.
+ */
+static NSString *const signinUrlPath = @"/oauth/signin_mobile";
 
 @interface SignInWebViewController ()
 @property (weak) id<SignInWebViewControllerDelegate> signInDelegate;
@@ -24,7 +42,7 @@
 @end
 
 @implementation SignInWebViewController
-@synthesize webview;
+@synthesize uiWebView;
 @synthesize signInDelegate;
 @synthesize didSucceed;
 @synthesize accessToken;
@@ -67,14 +85,15 @@
 
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accessToken"];
 
-    NSURL *url =
-            [NSURL URLWithString:@"https://webview-poc.dev.janraincapture.com/oauth/signin_mobile?redirect_uri=https://mobilefinish.janraincapture.com&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh&response_type=token"];
-//    [NSURL URLWithString:@"https://webview-poc.dev.janraincapture.com/oauth/signin_mobile?redirect_uri=https://redirect.com&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh&response_type=token"];
+    // This is the absolute URL for the sign in web page optimized for mobile.
+    NSString *captureSignInUrl =
+            [[NSArray arrayWithObjects:@"https://", captureUiDomain,
+                                       signinUrlPath,
+                                       @"?redirect_uri=", sentinelUrl,
+                                       @"&client_id=", captureApidClientId,
+                                       @"&response_type=token", nil] componentsJoinedByString:@""];
 
-    NSURLRequest *req = [NSURLRequest requestWithURL:url];
-
-    [webview loadRequest:req];
-
+    [uiWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:captureSignInUrl]]];
 }
 
 - (void)cancelButtonPressed:(id)sender
@@ -112,7 +131,7 @@
 {
     DLog(@"%@", [[request URL] absoluteString]);
 
-    if ([[[request URL] absoluteString] hasPrefix:@"https://mobilefinish.janraincapture.com"])
+    if ([[[request URL] absoluteString] hasPrefix:sentinelUrl])
     {
         NSString *urlString = [[request URL] absoluteString];
 

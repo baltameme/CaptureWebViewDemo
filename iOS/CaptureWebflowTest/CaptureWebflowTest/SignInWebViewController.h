@@ -15,7 +15,7 @@
 @end
 
 @interface SignInWebViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate>
-@property (weak) IBOutlet UIWebView *webview;
+@property (weak) IBOutlet UIWebView *uiWebView;
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
           andDelegate:(id<SignInWebViewControllerDelegate>)delegate;
 @end
