@@ -373,6 +373,7 @@
 				GCC_PREFIX_HEADER = "CaptureWebflowTest/CaptureWebflowTest-Prefix.pch";
 				INFOPLIST_FILE = "CaptureWebflowTest/CaptureWebflowTest-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -384,6 +385,7 @@
 				GCC_PREFIX_HEADER = "CaptureWebflowTest/CaptureWebflowTest-Prefix.pch";
 				INFOPLIST_FILE = "CaptureWebflowTest/CaptureWebflowTest-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
