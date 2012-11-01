@@ -127,7 +127,8 @@ static NSString *const signinUrlPath = @"/oauth/signin_mobile";
 }
 
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
+ navigationType:(UIWebViewNavigationType)navigationType
 {
     DLog(@"%@", [[request URL] absoluteString]);
 
