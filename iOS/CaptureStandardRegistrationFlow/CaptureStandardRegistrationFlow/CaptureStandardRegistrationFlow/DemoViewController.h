@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  DemoViewController.h
 //  CaptureStandardRegistrationFlow
 //
 //  Created by Nathan on 02/11/13.
@@ -8,6 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
-
+@interface DemoViewController : UIViewController
+- (void)signInButtonPressed;
 @end

@@ -10,6 +10,7 @@
 
 @interface CaptureWebViewController : UIViewController <UIWebViewDelegate, UIAlertViewDelegate>
 @property (weak) IBOutlet UIWebView *uiWebView;
+
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-          andDelegate:(id<SignInWebViewControllerDelegate>)delegate;
+          andDelegate:(id<CaptureWebViewControllerDelegate>)delegate;
 @end
