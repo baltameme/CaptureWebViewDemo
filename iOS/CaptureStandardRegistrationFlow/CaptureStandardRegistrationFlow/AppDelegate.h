@@ -8,12 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@class DemoViewController;
+@class DemoNavController;
+@class CaptureWebViewController;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+@property (strong, nonatomic) CaptureWebViewController *captureController;
 
-@property (strong, nonatomic) DemoViewController *viewController;
-
++ (AppDelegate *)sharedDelegate;
 @end

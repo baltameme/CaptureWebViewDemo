@@ -81,7 +81,7 @@ static NSString *const signinUrlPath = @"/oauth/signin_mobile";
 
 - (void)viewDidAppear:(BOOL)animated
 {
-   [super viewDidAppear:animated];
+    [super viewDidAppear:animated];
 
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:@"accessToken"];
 

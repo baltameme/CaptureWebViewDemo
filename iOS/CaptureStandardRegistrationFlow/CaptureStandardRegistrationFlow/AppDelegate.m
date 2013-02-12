@@ -8,22 +8,27 @@
 
 #import "AppDelegate.h"
 
-#import "DemoViewController.h"
+#import "DemoNavController.h"
+#import "DemoNavRootViewController.h"
+#import "CaptureWebViewController.h"
 
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.backgroundColor = [UIColor whiteColor];
     // Override point for customization after application launch.
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone) {
-        self.viewController = [[DemoViewController alloc] initWithNibName:@"ViewController_iPhone" bundle:nil];
-    } else {
-        self.viewController = [[DemoViewController alloc] initWithNibName:@"ViewController_iPad" bundle:nil];
-    }
-    self.window.rootViewController = self.viewController;
+    DemoNavRootViewController *demoNavRoot = [[DemoNavRootViewController alloc] initWithNibName:nil bundle:nil];
+    DemoNavController *demoNav = [[DemoNavController alloc] initWithRootViewController:demoNavRoot];
+    self.window.rootViewController = demoNav;
     [self.window makeKeyAndVisible];
     return YES;
+}
+
++ (AppDelegate *)sharedDelegate
+{
+     return (AppDelegate *)[UIApplication sharedApplication].delegate;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application

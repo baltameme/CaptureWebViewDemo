@@ -13,4 +13,10 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
           andDelegate:(id<CaptureWebViewControllerDelegate>)delegate;
+
+- (void)pushFlow:(id)flow ontoNavigationController:(UINavigationController *)nc;
+
+- (void)presentFlow:(id)flow fromViewController:(UIViewController *)vc;
+
+
 @end
