@@ -1,45 +1,40 @@
 #import "CaptureWebViewController.h"
 #import "debug_log.h"
 
-/**
-* This is the fully qualified domain name of your Capture UI server.
-*/
-static NSString *const captureUiDomain = @"webview-poc.dev.janraincapture.com";
-
-/**
-* This is the Capture apid client ID for the mobile app. DO NOT USE THE OWNER CLIENT ID.
-*/
-static NSString *const captureApidClientId = @"zc7tx83fqy68mper69mxbt5dfvd7c2jh";
-
 @interface CaptureWebViewController ()
 
 @property(strong) UIWebView *webView;
 @property(weak) id<CaptureWebViewControllerDelegate> captureDelegate;
-@property(nonatomic, strong) NSString *activeFlow;
+@property(nonatomic, strong) NSString *activePageName;
 
 @end
 
 @implementation CaptureWebViewController
 
-static NSDictionary *JR_CAPTURE_WEBVIEW_FLOWS;
+static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 
 +(void)initialize
 {
-    JR_CAPTURE_WEBVIEW_FLOWS = @{
-    @"signin":@{
-    @"title":@"Sign In",
-    @"url":@"https://mulciber.janrain.com/CaptureWidget/mobile/index.php"
-},
-    @"profile":@{
-    @"title":@"Update Profile",
-    @"url":@""
+    JR_CAPTURE_WEBVIEW_PAGES = @{
+            @"signin" : @{
+                    @"title" : @"Sign In",
+                    @"url" : @"https://mulciber.janrain.com/CaptureWidget/mobile/index.php"
+            },
+            @"profile" : @{
+                    @"title" : @"Update Profile",
+                    @"url" : @"https://mulciber.janrain.com/CaptureWidget/mobile/edit-profile.php"
+            }
+    };
 }
-};
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
 }
 
 @synthesize webView;
 @synthesize captureDelegate;
-@synthesize activeFlow;
+@synthesize activePageName;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
           andDelegate:(id<CaptureWebViewControllerDelegate>)delegate
@@ -60,21 +55,29 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_FLOWS;
 
 - (void)viewDidLoad
 {
-    [self setTitle:[[JR_CAPTURE_WEBVIEW_FLOWS objectForKey:activeFlow] objectForKey:@"title"]];
+    [self setTitle:[[JR_CAPTURE_WEBVIEW_PAGES objectForKey:activePageName] objectForKey:@"title"]];
+}
+
+- (void)viewDidDisappear:(BOOL)animated
+{
+    [webView loadData:[@"" dataUsingEncoding:NSUTF8StringEncoding] MIMEType:@"text/html"
+     textEncodingName:@"utf8" baseURL:[NSURL URLWithString:@"about:blank"]];
+
+    [super viewDidDisappear:animated];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
 
-    NSString *captureUrl = [[JR_CAPTURE_WEBVIEW_FLOWS objectForKey:activeFlow] objectForKey:@"url"];
+    NSString *captureUrl = [[JR_CAPTURE_WEBVIEW_PAGES objectForKey:activePageName] objectForKey:@"url"];
 
     [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:captureUrl]]];
 }
 
 - (void)pushFlow:(NSString *) flowName ontoNavigationController:(UINavigationController *) nc
 {
-    self.activeFlow = flowName;
+    self.activePageName = flowName;
     [nc pushViewController:self animated:YES];
 }
 
@@ -83,24 +86,24 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_FLOWS;
     [super didReceiveMemoryWarning];
 }
 
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
+- (void)webView:(UIWebView *)webView_ didFailLoadWithError:(NSError *)error
 {
-    DLog(@"webView error: %@", error);
+    DLog(@"webView load error: %@", error);
 }
 
-- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
+- (BOOL)webView:(UIWebView *)webView_ shouldStartLoadWithRequest:(NSURLRequest *)request
 navigationType:(UIWebViewNavigationType)navigationType
 {
-    DLog(@"webView shouldStartLoadWithRequest %@", request);
+    //DLog(@"webView shouldStartLoadWithRequest %@", request);
     return YES;
 }
 
-- (void)webViewDidFinishLoad:(UIWebView *)webView
+- (void)webViewDidFinishLoad:(UIWebView *)webView_
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
-- (void)webViewDidStartLoad:(UIWebView *)webView
+- (void)webViewDidStartLoad:(UIWebView *)webView_
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 }
