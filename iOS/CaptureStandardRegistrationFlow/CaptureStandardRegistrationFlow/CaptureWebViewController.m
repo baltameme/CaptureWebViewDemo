@@ -1,17 +1,5 @@
 #import "CaptureWebViewController.h"
 #import "debug_log.h"
-#define JANRAIN_BLUE ([UIColor colorWithRed:0.102 green:0.33 blue:0.48 alpha:1.0])
-
-
-@interface CaptureWebViewController ()
-
-@property(weak) id<CaptureWebViewControllerDelegate> captureDelegate;
-@property(nonatomic, strong) id activeFlow;
-
-
-@end
-
-@implementation CaptureWebViewController
 
 /**
 * This is the fully qualified domain name of your Capture UI server.
@@ -23,7 +11,33 @@ static NSString *const captureUiDomain = @"webview-poc.dev.janraincapture.com";
 */
 static NSString *const captureApidClientId = @"zc7tx83fqy68mper69mxbt5dfvd7c2jh";
 
-@synthesize uiWebView;
+@interface CaptureWebViewController ()
+
+@property(strong) UIWebView *webView;
+@property(weak) id<CaptureWebViewControllerDelegate> captureDelegate;
+@property(nonatomic, strong) NSString *activeFlow;
+
+@end
+
+@implementation CaptureWebViewController
+
+static NSDictionary *JR_CAPTURE_WEBVIEW_FLOWS;
+
++(void)initialize
+{
+    JR_CAPTURE_WEBVIEW_FLOWS = @{
+    @"signin":@{
+    @"title":@"Sign In",
+    @"url":@"https://mulciber.janrain.com/CaptureWidget/mobile/index.php"
+},
+    @"profile":@{
+    @"title":@"Update Profile",
+    @"url":@""
+}
+};
+}
+
+@synthesize webView;
 @synthesize captureDelegate;
 @synthesize activeFlow;
 
@@ -38,51 +52,30 @@ static NSString *const captureApidClientId = @"zc7tx83fqy68mper69mxbt5dfvd7c2jh"
     return self;
 }
 
-- (void)pushFlow:(id) flow ontoNavigationController:(UINavigationController *) nc
+- (void)loadView
 {
-    self.activeFlow = flow;
-    [nc pushViewController:self animated:YES];
-}
-
-- (void)presentFlow:(id) flow fromViewController:(UIViewController *) vc
-{
-    // create a stub nav controller to hold the cancel button
+    self.view = self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
+    webView.delegate = self;
 }
 
 - (void)viewDidLoad
 {
-    [self.navigationController.navigationBar setTintColor:JANRAIN_BLUE];
-    //[self setTitle:[activeFlow getTitle]];
-
-    UIBarButtonItem *cancelButton =
-                        [[UIBarButtonItem alloc]
-                                initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                     target:self
-                                                     action:@selector(cancelButtonPressed:)];
-
-
-    self.navigationItem.rightBarButtonItem         = cancelButton;
-    self.navigationItem.rightBarButtonItem.enabled = YES;
-
-    self.navigationItem.rightBarButtonItem.style   = UIBarButtonItemStyleBordered;
-
+    [self setTitle:[[JR_CAPTURE_WEBVIEW_FLOWS objectForKey:activeFlow] objectForKey:@"title"]];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
-   [super viewDidAppear:animated];
+    [super viewDidAppear:animated];
 
-    //NSString *captureUrl = [activeFlow getUrl];
-    //
-    //[uiWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:captureUrl]]];
+    NSString *captureUrl = [[JR_CAPTURE_WEBVIEW_FLOWS objectForKey:activeFlow] objectForKey:@"url"];
+
+    [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:captureUrl]]];
 }
 
-- (void)cancelButtonPressed:(id)sender
+- (void)pushFlow:(NSString *) flowName ontoNavigationController:(UINavigationController *) nc
 {
-    if ([captureDelegate respondsToSelector:@selector(captureWebViewWillCancel)])
-        [captureDelegate captureWebViewWillCancel];
-
-    [[self navigationController] popViewControllerAnimated:YES];
+    self.activeFlow = flowName;
+    [nc pushViewController:self animated:YES];
 }
 
 - (void)didReceiveMemoryWarning
@@ -92,22 +85,24 @@ static NSString *const captureApidClientId = @"zc7tx83fqy68mper69mxbt5dfvd7c2jh"
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-
+    DLog(@"webView error: %@", error);
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request
 navigationType:(UIWebViewNavigationType)navigationType
 {
+    DLog(@"webView shouldStartLoadWithRequest %@", request);
     return YES;
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView
 {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView
 {
-
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
 }
 
 - (NSUInteger)supportedInterfaceOrientations

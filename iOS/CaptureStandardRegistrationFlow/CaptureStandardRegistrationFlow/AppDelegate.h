@@ -7,11 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "CaptureWebViewController.h"
 
 @class DemoNavController;
 @class CaptureWebViewController;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, CaptureWebViewControllerDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) CaptureWebViewController *captureController;

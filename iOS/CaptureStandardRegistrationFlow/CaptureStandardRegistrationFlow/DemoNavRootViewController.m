@@ -40,9 +40,16 @@ static void makeAutoresizing(UIView *v)
     [self addButtonForTitle:@"Edit Profile" action:@selector(editProfileButtonPressed)];
 }
 
+- (void)signInButtonPressed
+{
+    [[AppDelegate sharedDelegate].captureController pushFlow:@"signin"
+                                    ontoNavigationController:self.navigationController];
+}
+
 - (void)editProfileButtonPressed
 {
-
+    [[AppDelegate sharedDelegate].captureController pushFlow:@"signin"
+ontoNavigationController:self.navigationController];
 }
 
 - (void)addButtonForTitle:(NSString *)title action:(SEL)action
@@ -64,12 +71,7 @@ static void makeAutoresizing(UIView *v)
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    self.navigationController.title = @"Capture";
-}
-
-- (void)signInButtonPressed
-{
-    [[AppDelegate sharedDelegate].captureController pushFlow:@"" ontoNavigationController:self.navigationController];
+    [self setTitle:@"Capture Demo"];
 }
 
 @end

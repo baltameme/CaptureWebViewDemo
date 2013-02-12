@@ -21,9 +21,20 @@
     // Override point for customization after application launch.
     DemoNavRootViewController *demoNavRoot = [[DemoNavRootViewController alloc] initWithNibName:nil bundle:nil];
     DemoNavController *demoNav = [[DemoNavController alloc] initWithRootViewController:demoNavRoot];
+    self.captureController = [[CaptureWebViewController alloc] initWithNibName:nil bundle:nil andDelegate:self];
     self.window.rootViewController = demoNav;
     [self.window makeKeyAndVisible];
     return YES;
+}
+
+- (void)captureWebViewWillCancel
+{
+
+}
+
+- (void)signInDidSucceedWithAccessToken:(NSString *)accessToken
+{
+
 }
 
 + (AppDelegate *)sharedDelegate
