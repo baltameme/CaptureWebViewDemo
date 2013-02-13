@@ -71,7 +71,7 @@
                 janrain.settings.capture.captureServer = 'https://widgetdemo2.janraincapture.com';
                 janrain.settings.capture.registerFlow = 'socialMobileRegistration';
                 janrain.settings.capture.flowVersion = 'HEAD';
-                janrain.settings.capture.flowName = 'mulciberSigninMobile';
+                janrain.settings.capture.flowName = 'webViewSignIn';
 
                 janrain.settings.capture.redirectFlow = true;
                 janrain.settings.popup = false;
@@ -130,10 +130,6 @@
             function janrainCaptureWidgetOnLoad() {
                 janrain.capture.ui.start();
 
-                janrain.events.onCaptureModalReady.addHandler(function(){
-                    janrain.capture.ui.renderScreen('signIn');
-                });
-
                 function handleCaptureLogin(result) {
 
                     niceLog ("result:");
@@ -147,36 +143,13 @@
                     else if (janrain.settings.capture.responseType == 'token') {
                         janrain.capture.ui.modal.close();
                     }
-
-                    $("#loggedInNavigation").show();
-                    $("#loggedOutNavigation").hide();
-
                 }
-                janrain.events.onCaptureRegistrationSuccess.addHandler(function(result){
-                    document.getElementById("launchDemo").style.display = 'none';
-                });
                 janrain.events.onCaptureLoginSuccess.addHandler(function(result){
                     janrain.capture.ui.modal.close();
-                    document.getElementById("launchDemo").style.display = 'none';
                     window.location.reload();
-                });
-                janrain.events.onCaptureSessionFound.addHandler(function(result){
-                    document.getElementById("launchDemo").style.display = 'none';
-                });
-                janrain.events.onCaptureSessionNotFound.addHandler(function(result){
-                    document.getElementById("launchDemo").style.display = 'block';
                 });
                 janrain.events.onCaptureSessionEnded.addHandler(function(result){
                     window.location.reload();
-                });
-                janrain.events.onCaptureSessionFound.addHandler(function(result){
-                    $("#loggedInNavigation").show();
-                    $("#loggedOutNavigation").hide();
-                });
-
-                janrain.events.onCaptureSessionNotFound.addHandler(function(result){
-                    $("#loggedInNavigation").hide();
-                    $("#loggedOutNavigation").show();
                 });
 
                 janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
@@ -203,37 +176,12 @@
             }
 </script>
     </head>
-    <body class="janrain-font">
-        <div class="global_nav">
-            <div class="wrapper">
-                <ul id="loggedInNavigation" class="nav-list" style="display: none;">
-                    <li><a href="edit-profile">Edit Profile</a></li>
-                    <li><a href="#" id="signOut">Sign Out</a></li>
-                </ul>
-                <ul id="loggedOutNavigation" class="nav-list">
-                    <li><a href="#" class="capture_modal_open" id="signInLink">Sign In</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="wrapper">
-            <div id="launchDemo" class="section" style="display: none;">
-                <div class="grid-block">
-                    <div class="center-col col4">
-                        <div class="contentBoxWhiteShadow">
-                            <h5>Mobile Demo Capture Widget</h5>
-                            <br /><p>See examples of the sign in, create account and edit profile flow for mobile devices.</p>
-                            <a href="#" class="capture_modal_open primary btn btn_large">Launch Demo <span class="step janrain-icon-forward janrain-icon-16"></span></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+    <body>
         <div id="activeSessionDisplay" class="grid-block" style="display: none;">
             <div class="center-col col4 section">
                 <div class="contentBoxWhiteShadow">
-                    <h5>Hello {* displayNameData *}</h5>
-                    <br /><p><b>Now that you're logged in&hellip;</b></p>
+                    <h2>Hello {* displayNameData *}</h2>
+                    <p><b>Now that you're logged in&hellip;</b></p>
                     <a href="edit-profile" class="capture_btn_full capture_btn capture_primary"><span class="janrain-icon-16 janrain-icon-pencil"></span> Edit Profile</a> <a href="#" class="capture_end_session capture_btn capture_primary capture_btn_full"><span class="janrain-icon-16 janrain-icon-ex2"></span> Sign Out</a>
                 </div>
             </div>

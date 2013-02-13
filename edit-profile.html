@@ -3,11 +3,7 @@
 <html>
     <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0" />
-        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
-        <style type="text/css">
-          .contentBoxWhiteShadow .btn_large {margin-top: 10px}
-          .col_10 h2 {padding-top: 0;}
-        </style>
+    <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>        <script type="text/javascript">
 
             // set up the navigation
@@ -65,9 +61,8 @@
                 janrain.settings.capture.clientId = 'nzmzztgpkst59sgnfntbp56xwacmb735';
                 janrain.settings.capture.responseType = 'token';
                 janrain.settings.capture.captureServer = 'https://widgetdemo2.janraincapture.com';
-                janrain.settings.capture.registerFlow = 'socialMobileRegistration';
                 janrain.settings.capture.flowVersion = 'HEAD';
-                janrain.settings.capture.flowName = 'mulciberProfileMobile';
+                janrain.settings.capture.flowName = 'webViewProfile';
 
                 janrain.settings.capture.recaptchaPublicKey = '6LeVKb4SAAAAAGv-hg5i6gtiOV4XrLuCDsJOnYoP';
                 janrain.settings.capture.setProfileData = '';
@@ -319,7 +314,7 @@
         </div>
         <div class="capture_footer">
             <div class="capture_left">
-                <a href="#" onclick="janrain.capture.ui.modal.close()" class="capture_backButton capture_btn capture_primary"><span class="janrain-icon-16 janrain-icon-back"></span></a>
+                <a href="#" class="capture_backButton capture_btn capture_primary" data-capturescreen="editProfileLanding"><span class="janrain-icon-16 janrain-icon-back"></span></a>
             </div>
         </div>
     </div>
