@@ -178,12 +178,10 @@
                     $("#loggedInNavigation").hide();
                     $("#loggedOutNavigation").show();
                 });
-                alert("onCaptureLoginSuccess registered");
 
                 janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
                     if (result.accessToken && !result.oneTime) {
-                        alert("onCaptureLoginSuccess: " + result);
-                        document.href = "janrain:accessToken=" + result.accessToken;
+                        document.location.href = "janrain:accessToken=" + result.accessToken;
                     }
                 });
             }
