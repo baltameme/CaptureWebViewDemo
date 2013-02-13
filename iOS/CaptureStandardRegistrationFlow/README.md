@@ -51,8 +51,8 @@ The following settings
 
 * janrain.settings.popup = false; // required
 The widget spawns new windows for identity provider sign-in by default, this
-flag forces the widget to operate in a single-window mode appropriate for operatin
-inside a UIWebView
+flag forces the widget to operate in a single-window mode appropriate for
+operation inside a UIWebView
 
 * janrain.settings.capture.redirectFlow = true; // required
 ???
@@ -67,8 +67,13 @@ inside a UIWebView
 
 #### Interacting with the UIWebView from the iOS Host App
 
-The UIWebView message `+(NSString *)stringByEvaluatingJavaScriptFromString:(NSString *) jsString` serves as a bridge to inject and extract information from the UIWebView.
+The UIWebView message `+(NSString *)stringByEvaluatingJavaScriptFromString:(NSString *) jsString`
+serves as a bridge to inject and extract information from the UIWebView.
 
-The
+The widget can also emit information to the host app by initiating specially
+formed page loads, and responding to the UIWebView-webView:shouldStartLoadWithRequest:navigationType:
+For a discussion of this technique and links to implementations see this
+Stackoverflow question: http://stackoverflow.com/questions/9473582/ios-javascript-bridge
 
 ### An Example
+
