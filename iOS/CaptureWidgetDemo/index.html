@@ -68,8 +68,7 @@
                 janrain.settings.capture.appId= '25qk3n4rkvgcwpk2y38vypzh49';
                 janrain.settings.capture.clientId = 'nzmzztgpkst59sgnfntbp56xwacmb735';
                 janrain.settings.capture.responseType = 'token';
-                //janrain.settings.capture.captureServer = 'https://widgetdemo.janraincapture.com';
-                janrain.settings.capture.captureServer = 'http://local.janraincapture.com:5012';
+                janrain.settings.capture.captureServer = 'https://widgetdemo2.janraincapture.com';
                 janrain.settings.capture.registerFlow = 'socialMobileRegistration';
                 janrain.settings.capture.flowVersion = 'HEAD';
                 janrain.settings.capture.flowName = 'mulciberSigninMobile';
@@ -85,7 +84,6 @@
                 janrain.settings.capture.confirmModalClose = '';
                 janrain.settings.type = 'embed';
                 janrain.settings.tokenUrl = 'http://localhost/capturewidget.demo-private/examples/sample_token_url.php';
-                //janrain.settings.tokenAction = 'event';
                 janrain.settings.tokenAction = 'url';
                 janrain.settings.format = 'two column';
                 janrain.settings.providers = ['facebook','twitter','yahoo','google','linkedin','paypal'];
@@ -117,13 +115,9 @@
                 e.type = 'text/javascript';
                 e.id = 'janrainAuthWidget'
 
-                // var url = document.location.protocol === 'https:' ? 'https://' : 'http://';
-                //url += 'd16s8pqtk4uodx.cloudfront.net';
-                //url += '/capturewidget/load.js';
-                //e.src = url;
                 var url = document.location.protocol === 'https:' ? 'https://' : 'http://';
-                url += 'apps.janrain.com:4567';
-                url += '/load/test-app';
+                url += 'd16s8pqtk4uodx.cloudfront.net';
+                url += '/capturewidget/load.js';
                 e.src = url;
                 
                 var s = document.getElementsByTagName('script')[0];
