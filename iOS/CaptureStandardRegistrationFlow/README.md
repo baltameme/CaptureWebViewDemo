@@ -50,6 +50,10 @@ operation inside a UIWebView.
 
 * janrain.settings.redirectUri = location.href; // required.
 
+* janrain.settings.capture.captureServer = 'http://url/to/capture/app';
+
+* janrain.settings.tokenUrl = janrain.settings.capture.captureServer;
+
 Specifies the page to be redirected to after signing in.
 
 ### Interacting with the Widget from the iOS Host App
