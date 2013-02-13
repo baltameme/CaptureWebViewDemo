@@ -18,11 +18,11 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
     JR_CAPTURE_WEBVIEW_PAGES = @{
             @"signin" : @{
                     @"title" : @"Sign In",
-                    @"url" : @"https://mulciber.janrain.com/CaptureWidget/mobile/index.php"
+                    @"url" : @"http://mulciber.janrain.com/CaptureWidget/mobile/index.php"
             },
             @"profile" : @{
                     @"title" : @"Update Profile",
-                    @"url" : @"https://mulciber.janrain.com/CaptureWidget/mobile/edit-profile.php"
+                    @"url" : @"http://mulciber.janrain.com/CaptureWidget/mobile/edit-profile.php"
             }
     };
 }
@@ -101,6 +101,11 @@ navigationType:(UIWebViewNavigationType)navigationType
 - (void)webViewDidFinishLoad:(UIWebView *)webView_
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+}
+
+- (NSString *)getAccesstoken
+{
+    return [webView stringByEvaluatingJavaScriptFromString:@"capture.getAccessToken();"];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView_
