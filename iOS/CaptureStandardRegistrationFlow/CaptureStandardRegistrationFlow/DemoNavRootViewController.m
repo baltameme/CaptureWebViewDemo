@@ -48,8 +48,8 @@ static void makeAutoresizing(UIView *v)
 
 - (void)editProfileButtonPressed
 {
-    [[AppDelegate sharedDelegate].captureController pushFlow:@"signin"
-ontoNavigationController:self.navigationController];
+    [[AppDelegate sharedDelegate].captureController pushFlow:@"profile"
+                                    ontoNavigationController:self.navigationController];
 }
 
 - (void)addButtonForTitle:(NSString *)title action:(SEL)action

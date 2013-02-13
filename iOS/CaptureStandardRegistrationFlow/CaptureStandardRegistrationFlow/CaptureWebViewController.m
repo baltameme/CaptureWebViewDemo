@@ -18,11 +18,11 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
     JR_CAPTURE_WEBVIEW_PAGES = @{
             @"signin" : @{
                     @"title" : @"Sign In",
-                    @"url" : @"http://mulciber.janrain.com/CaptureWidget/mobile/index.php"
+                        @"url" : @"http://janrain.github.com/CaptureWebViewDemo/index.html"
             },
             @"profile" : @{
                     @"title" : @"Update Profile",
-                    @"url" : @"http://mulciber.janrain.com/CaptureWidget/mobile/edit-profile.php"
+                    @"url" : @"http://janrain.github.com/CaptureWebViewDemo/edit-profile.html"
             }
     };
 }
@@ -89,6 +89,7 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 - (void)webView:(UIWebView *)webView_ didFailLoadWithError:(NSError *)error
 {
     DLog(@"webView load error: %@", error);
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
 - (BOOL)webView:(UIWebView *)webView_ shouldStartLoadWithRequest:(NSURLRequest *)request
