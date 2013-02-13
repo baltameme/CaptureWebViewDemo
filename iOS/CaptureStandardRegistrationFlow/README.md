@@ -34,12 +34,13 @@ Flows are configured per instance of Capture via the Flow system.
 
 #### Widget Settings
 
-The following settings
+The following settings configure the Capture widget to use redirection.
 
 * janrain.settings.popup = false; // required
+
 The widget spawns new windows for identity provider sign-in by default, this
 flag forces the widget to operate in a single-window mode appropriate for
-operation inside a UIWebView
+operation inside a UIWebView.
 
 * janrain.settings.capture.redirectFlow = true; // required
 
@@ -47,7 +48,9 @@ operation inside a UIWebView
 
 * janrain.settings.type = 'embed'; // suggested
 
-* janrain.settings.redirectUri = location.href; // required
+* janrain.settings.redirectUri = location.href; // required.
+
+Specifies the page to be redirected to after signing in.
 
 ### Interacting with the Widget from the iOS Host App
 
