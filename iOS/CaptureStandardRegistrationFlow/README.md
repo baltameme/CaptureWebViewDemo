@@ -8,6 +8,12 @@ Instead, the Capture widget can be configured to redirect to the social
 provider's login screen, then on to the Capture UI server, and finally back to
 the original page.
 
+### Example HTML Files
+
+* [Example Index Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index.html)
+
+* [Example Edit Profile Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/edit-profile.html)
+
 ### Starting the Widget
 
 The Capture user registration widget handles user registration and related flows.
