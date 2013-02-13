@@ -1,5 +1,25 @@
 #import "CaptureWebViewController.h"
 #import "debug_log.h"
+#import "stdarg.h"
+
+@implementation NSString (Janrain_Url_Escaping)
+- (NSString *)stringByUrlEncoding
+{
+    NSString *encodedString = (__bridge_transfer NSString *) CFURLCreateStringByAddingPercentEscapes(
+            NULL,
+            (__bridge CFStringRef) self,
+            NULL,
+            (CFStringRef) @"!*'();:@&=+$,/?%#[]",
+            kCFStringEncodingUTF8);
+
+    return encodedString;
+}
+
+- (NSString *)stringByUrlDecoding
+{
+    return [self stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+@end
 
 @interface CaptureWebViewController ()
 
@@ -18,7 +38,7 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
     JR_CAPTURE_WEBVIEW_PAGES = @{
             @"signin" : @{
                     @"title" : @"Sign In",
-                        @"url" : @"http://janrain.github.com/CaptureWebViewDemo/index.html"
+                    @"url" : @"http://janrain.github.com/CaptureWebViewDemo/index.html"
             },
             @"profile" : @{
                     @"title" : @"Update Profile",
@@ -93,8 +113,34 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 {
     if ([request.URL.scheme isEqualToString:@"janrain"])
     {
-        NSString *token = [[request.URL.absoluteString componentsSeparatedByString:@"="] objectAtIndex:1];
-        [self sendOptionalDelegateMessage:@selector(signInDidSucceedWithAccessToken:) withArgument:token];
+        if ([request.URL.absoluteString hasPrefix:@"janrain:accessToken"])
+        {
+            NSString *token = [[request.URL.absoluteString componentsSeparatedByString:@"="] objectAtIndex:1];
+            [self sendOptionalDelegateMessage:@selector(signInDidSucceedWithAccessToken:) withArgument:token];
+        }
+        else
+        {
+            // General case of JS <-> host event bridging
+            NSString *pathString = [request.URL.absoluteString substringFromIndex:[@"janrain:" length]];
+            NSArray *pathComponents = [pathString componentsSeparatedByString:@"?"];
+            NSString *eventName = [pathComponents objectAtIndex:0];
+            NSString *argsComponent = [pathComponents objectAtIndex:1];
+            NSArray *argPairs = [argsComponent componentsSeparatedByString:@"&"];
+            NSMutableDictionary *argsDict = [NSMutableDictionary dictionary];
+            for (id argPair in argPairs)
+            {
+                NSArray *sides = [argPair componentsSeparatedByString:@"="];
+                [argsDict setObject:[sides objectAtIndex:1] forKey:[sides objectAtIndex:0]];
+            }
+
+            NSString *eventArgsJson = [[argsDict objectForKey:@"arguments"] stringByUrlDecoding];
+            NSData *eventArgsJsonData = [eventArgsJson dataUsingEncoding:NSUTF8StringEncoding];
+            id eventArgs = [NSJSONSerialization JSONObjectWithData:eventArgsJsonData options:0 error:nil];
+
+            DLog(@"event: %@ args: %@", eventName, eventArgs);
+
+            return NO;
+        }
     }
     DLog(@"webView shouldStartLoadWithRequest %@", request);
     return YES;
@@ -111,6 +157,7 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 - (void)webViewDidFinishLoad:(UIWebView *)webView_
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
+    [webView stringByEvaluatingJavaScriptFromString:@"janrainNativeAppBridgeEnabled = true;"];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView_

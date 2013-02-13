@@ -29,6 +29,7 @@ include the standard block of widget settings, first run:
 Valid flow names are:
 
  * signIn
+ *
 
 Flows are configured per instance of Capture via the Flow system.
 
@@ -64,8 +65,8 @@ serves as a bridge to inject and extract information from the UIWebView.
 The widget can also emit information to the host app by initiating specially
 formed page loads, and responding to the UIWebView-webView:shouldStartLoadWithRequest:navigationType:
 
-For a discussion of this technique and links to implementations see this
-Stackoverflow question: http://stackoverflow.com/questions/9473582/ios-javascript-bridge
+For a discussion of this technique and links to open source implementations
+see this Stackoverflow question: http://stackoverflow.com/questions/9473582/ios-javascript-bridge
 
 #### Setting the Access Token
 
@@ -81,7 +82,7 @@ Register an event handler to the onCaptureLoginSuccess event.
         }
     });
 
-And monitor request URLs in `UIWebView-webView:shouldStartLoadWithRequest:navigationType`:
+... and monitor request URLs in `UIWebView-webView:shouldStartLoadWithRequest:navigationType`:
 
     if ([request.URL.scheme isEqualToString:@"janrain"])
     {
@@ -89,8 +90,13 @@ And monitor request URLs in `UIWebView-webView:shouldStartLoadWithRequest:naviga
         [self sendOptionalDelegateMessage:@selector(signInDidSucceedWithAccessToken:) withArgument:token];
     }
 
+#### Handling JavaScript Events in the Host App
+
+
+
 ### An Example
 
 This Xcode project, CaptureStandardRegistrationFlow, is a working example of
 running the Capture user registration widget in a UIWebView.  It loads static
 pages hosted in the gh-pages branch of this Github repository.
+Each page embeds the widget and invokes a specific flow when loaded.
