@@ -50,7 +50,7 @@ operation inside a UIWebView.
 
 * janrain.settings.redirectUri = location.href; // required.
 
-* janrain.settings.capture.captureServer = 'http://url/to/capture/app';
+* janrain.settings.capture.captureServer = 'https://yourappdomain.janraincapture.com';
 
 * janrain.settings.tokenUrl = janrain.settings.capture.captureServer;
 
