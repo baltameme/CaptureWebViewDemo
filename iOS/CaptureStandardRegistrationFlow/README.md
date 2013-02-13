@@ -37,12 +37,11 @@ operation inside a UIWebView
 
 * janrain.settings.capture.redirectFlow = true; // required
 
-
 * janrain.settings.tokenAction = 'url'; // suggested
 
 * janrain.settings.type = 'embed'; // suggested
 
-* janrain.settings.redirectUri = location.href; //required
+* janrain.settings.redirectUri = location.href; // required
 
 ### Interacting with the Widget from the iOS Host App
 
@@ -59,7 +58,9 @@ Stackoverflow question: http://stackoverflow.com/questions/9473582/ios-javascrip
 
 Call janrain.capture.ui.createCaptureSession(accessToken)
 
-#### Register the onCaptureLoginSuccess getting the access token
+#### Getting the Access Token
+
+Register an event handler to the onCaptureLoginSuccess event.
 
     janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
         if (result.accessToken && !result.oneTime) {
