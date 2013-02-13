@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0" />
+        <meta http-equiv="content-type" content="text/html;charset=utf-8" />
+        <style type="text/css">
+            .contentBoxWhiteShadow .btn_large {margin-top: 10px}
+            .col_10 h2 {padding-top: 0;}
+            .capture_modal_open {display: block;}
+            .capture_btn_full {text-align: center;}
+        </style>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+        <script type="text/javascript">
+
+            // set up the navigation
+            $(document).ready(function() {
+
+                // on sign out, tell the widget to destroy the session
+                $('#signOut').click(function() {
+
+                    if (confirm("Really sign out?")) {
+                        janrain.events.onCaptureSessionEnded.addHandler(function(result){
+                            window.location.reload();
+                        });
+                    }
+
+                    return false;
+                });
+
+            });
+
+            // call our code/token exchanger, and use the token to set up a capture session
+            function getTokenForCode(code, redirect_uri) {
+
+                var url = "code-token-exchanger.php?auth_code=" + code + "&redirect_uri=" + redirect_uri;
+
+                $.getJSON(url, function(data) {
+
+                    console.log("data from call to code-token-exchanger.php:")
+                    console.log(data);
+
+                    janrain.capture.ui.createCaptureSession(data.access_token);
+
+                });
+            }
+
+
+            // simple logging wrapper
+            function niceLog(message) {
+                if (window.console && window.console.log) {
+                    console.log (message);
+                }
+                else {
+                    alert (message);
+                }
+            }
+
+
+            (function() {
+                if (typeof window.janrain !== 'object') window.janrain = {};
+                window.janrain.settings = {};
+                window.janrain.settings.capture = {};
+
+                janrain.settings.appUrl = 'https://capturewidget.rpxnow.com';
+                //janrain.settings.capture.redirectUri = 'http://example.com/',
+                janrain.settings.capture.redirectUri = location.href;
+                janrain.settings.capture.appId= '25qk3n4rkvgcwpk2y38vypzh49';
+                janrain.settings.capture.clientId = 'nzmzztgpkst59sgnfntbp56xwacmb735';
+                janrain.settings.capture.responseType = 'token';
+                //janrain.settings.capture.captureServer = 'https://widgetdemo.janraincapture.com';
+                janrain.settings.capture.captureServer = 'http://local.janraincapture.com:5012';
+                janrain.settings.capture.registerFlow = 'socialMobileRegistration';
+                janrain.settings.capture.flowVersion = 'HEAD';
+                janrain.settings.capture.flowName = 'mulciberSigninMobile';
+
+                janrain.settings.capture.redirectFlow = true;
+                janrain.settings.popup = false;
+
+                janrain.settings.capture.recaptchaPublicKey = '6LeVKb4SAAAAAGv-hg5i6gtiOV4XrLuCDsJOnYoP';
+                janrain.settings.capture.setProfileData = '';
+                janrain.settings.capture.keepProfileCookieAfterLogout = 'true';
+                janrain.settings.capture.setProfileCookie = 'true';
+                janrain.settings.capture.mobileStylesheets = ['styles/janrain-demo-mobile.css'];
+                janrain.settings.capture.confirmModalClose = '';
+                janrain.settings.type = 'embed';
+                janrain.settings.tokenUrl = 'http://localhost/capturewidget.demo-private/examples/sample_token_url.php';
+                //janrain.settings.tokenAction = 'event';
+                janrain.settings.tokenAction = 'url';
+                janrain.settings.format = 'two column';
+                janrain.settings.providers = ['facebook','twitter','yahoo','google','linkedin','paypal'];
+                janrain.settings.providersPerPage = '4';
+                janrain.settings.actionText = ' ';
+                janrain.settings.width = '300';
+                janrain.settings.borderColor = '#ffffff';
+                janrain.settings.backgroundColor = '#ffffff';
+                janrain.settings.language = 'en';
+
+                janrain.settings.capture.modalBorderOpacity = 1;
+                janrain.settings.capture.modalBorderWidth = 5;
+                janrain.settings.capture.modalBorderRadius = 5;
+                janrain.settings.capture.modalCloseHtml = '<span class="janrain-icon-16 janrain-icon-ex2"></span>';
+                janrain.settings.capture.modalBorderColor = '#7AB433';
+                janrain.settings.capture.noModalBorderInlineCss = true;
+
+                janrain.settings.packages = ['login', 'capture'];
+
+
+                function isReady() { janrain.ready = true; };
+                if (document.addEventListener) {
+                 document.addEventListener("DOMContentLoaded", isReady, false);
+                } else {
+                 window.attachEvent('onload', isReady);
+                }
+
+                var e = document.createElement('script');
+                e.type = 'text/javascript';
+                e.id = 'janrainAuthWidget'
+
+                // var url = document.location.protocol === 'https:' ? 'https://' : 'http://';
+                //url += 'd16s8pqtk4uodx.cloudfront.net';
+                //url += '/capturewidget/load.js';
+                //e.src = url;
+                var url = document.location.protocol === 'https:' ? 'https://' : 'http://';
+                url += 'apps.janrain.com:4567';
+                url += '/load/test-app';
+                e.src = url;
+                
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(e, s);
+            })();
+
+            function janrainWidgetOnload() {
+            }
+
+            function janrainCaptureWidgetOnLoad() {
+                janrain.capture.ui.start();
+
+                janrain.events.onCaptureModalReady.addHandler(function(){
+                    janrain.capture.ui.renderScreen('signIn');
+                });
+
+                function handleCaptureLogin(result) {
+
+                    niceLog ("result:");
+                    niceLog (result);
+
+                    if (janrain.settings.capture.responseType == 'code') {
+                        niceLog ("exchanging code for token...");
+                        getTokenForCode(result.authorizationCode, "http://example.com/");
+                        janrain.capture.ui.modal.close();
+                    }
+                    else if (janrain.settings.capture.responseType == 'token') {
+                        janrain.capture.ui.modal.close();
+                    }
+
+                    $("#loggedInNavigation").show();
+                    $("#loggedOutNavigation").hide();
+
+                }
+                janrain.events.onCaptureRegistrationSuccess.addHandler(function(result){
+                    document.getElementById("launchDemo").style.display = 'none';
+                });
+                janrain.events.onCaptureLoginSuccess.addHandler(function(result){
+                    janrain.capture.ui.modal.close();
+                    document.getElementById("launchDemo").style.display = 'none';
+                    window.location.reload();
+                });
+                janrain.events.onCaptureSessionFound.addHandler(function(result){
+                    document.getElementById("launchDemo").style.display = 'none';
+                });
+                janrain.events.onCaptureSessionNotFound.addHandler(function(result){
+                    document.getElementById("launchDemo").style.display = 'block';
+                });
+                janrain.events.onCaptureSessionEnded.addHandler(function(result){
+                    window.location.reload();
+                });
+                janrain.events.onCaptureSessionFound.addHandler(function(result){
+                    $("#loggedInNavigation").show();
+                    $("#loggedOutNavigation").hide();
+                });
+
+                janrain.events.onCaptureSessionNotFound.addHandler(function(result){
+                    $("#loggedInNavigation").hide();
+                    $("#loggedOutNavigation").show();
+                });
+
+            }
+</script>
+    </head>
+    <body class="janrain-font">
+        <div class="global_nav">
+            <div class="wrapper">
+                <ul id="loggedInNavigation" class="nav-list" style="display: none;">
+                    <li><a href="edit-profile">Edit Profile</a></li>
+                    <li><a href="#" id="signOut">Sign Out</a></li>
+                </ul>
+                <ul id="loggedOutNavigation" class="nav-list">
+                    <li><a href="#" class="capture_modal_open" id="signInLink">Sign In</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="wrapper">
+            <div id="launchDemo" class="section" style="display: none;">
+                <div class="grid-block">
+                    <div class="center-col col4">
+                        <div class="contentBoxWhiteShadow">
+                            <h5>Mobile Demo Capture Widget</h5>
+                            <br /><p>See examples of the sign in, create account and edit profile flow for mobile devices.</p>
+                            <a href="#" class="capture_modal_open primary btn btn_large">Launch Demo <span class="step janrain-icon-forward janrain-icon-16"></span></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="activeSessionDisplay" class="grid-block" style="display: none;">
+            <div class="center-col col4 section">
+                <div class="contentBoxWhiteShadow">
+                    <h5>Hello {* displayNameData *}</h5>
+                    <br /><p><b>Now that you're logged in&hellip;</b></p>
+                    <a href="edit-profile" class="capture_btn_full capture_btn capture_primary"><span class="janrain-icon-16 janrain-icon-pencil"></span> Edit Profile</a> <a href="#" class="capture_end_session capture_btn capture_primary capture_btn_full"><span class="janrain-icon-16 janrain-icon-ex2"></span> Sign Out</a>
+                </div>
+            </div>
+        </div>
+        <div style="display:none;" id="signIn">
+            <div class="capture_header">
+                <h1>Sign Up / Sign In</h1>
+            </div>
+            <div class="capture_signin">
+                <h2>With your existing account from...</h2>
+                {* loginWidget *} <br />
+            </div>
+            <div class="capture_backgroundColor">
+                <div class="capture_signin">
+                    <h2>With a traditional account...</h2>
+                    {* #userInformationForm *}
+                    {* traditionalSignIn_emailAddress *}
+                    {* traditionalSignIn_password *}
+                    <div class="capture_textRight">
+                        {* traditionalSignIn_signInButton *}{* traditionalSignIn_createButton *}
+                    </div>
+                    {* /userInformationForm *}
+                </div>
+            </div>
+        </div>
+        <div style="display:none;" id="returnSocial">
+            <div class="capture_header">
+                <h1>Sign In</h1>
+            </div>
+            <div class="capture_subhead">
+                <h2>With your existing account from...</h2>
+            </div>
+            {* loginWidget *}
+            <div class="capture_centerText">
+                <a href="#" data-cancelcapturereturnexperience="true">Use another account</a></div>
+        </div>
+        <div style="display: none;" id="returnTraditional">
+            <div class="capture_header">
+                <h1>Sign In</h1>
+            </div>
+            <div class="capture_subhead">
+                <h2 class="capture_centerText">Welcome back!</h2>
+            </div>
+            <div class="capture_signin">
+                {* #userInformationForm *}
+                {* traditionalSignIn_emailAddress *}
+                {* traditionalSignIn_password *}
+                <div class="capture_centerText"><a href="#" data-cancelcapturereturnexperience="true">Use another account</a></div>
+                <div class="capture_footer">
+                    <div class="capture_right">
+                        {* signInButton *}
+                    </div>
+                </div>
+            </div>
+            {* /userInformationForm *}
+        </div>
+        <div style="display:none;" id="traditionalRegistration">
+            <div class="capture_header">
+                <h1>Almost Done!</h1>
+            </div>
+            {* #registrationForm *}
+            {* traditionalRegistration_firstName *}
+            {* traditionalRegistration_lastName *}
+            {* traditionalRegistration_emailAddress *}
+            {* traditionalRegistration_password *}
+            {* traditionalRegistration_displayName *}
+            By clicking "Create Account", you confirm that you accept our <a href="#">terms of service</a> and have read and understand <a href="#">privacy policy</a>.
+            <div class="capture_footer">
+                <div class="capture_left">
+                    {* backButton *}
+                </div>
+                <div class="capture_right">
+                    {* createAccountButton *}
+                </div>
+            </div>
+            {* /registrationForm *}
+        </div>
+
+        <div style="display:none;" id="socialMobileRegistration">
+            <div class="capture_header">
+                <h1>Almost Done!</h1>
+            </div>
+            <p>Confirm the information below before signing in.</p>
+            {* #socialRegistrationForm *}
+            {* socialRegistration_firstName *}
+            {* socialRegistration_lastName *}
+            {* socialRegistration_emailAddress *}
+            {* socialRegistration_displayName *}
+            <div class="capture_footer">
+                <div class="capture_left">
+                    {* backButton *}
+                </div>
+                <div class="capture_right">
+                    {* signInButton *}
+                </div>
+            </div>
+            {* /socialRegistrationForm *}
+        </div>
+        <div style="display:none;" id="registrationNewVerification">
+            <div class="capture_header">
+                <h1>Thank you for registering!</h1>
+            </div>
+            <p>We have sent a confirmation email to {* emailAddressData *}. Please check your email and click on the link to activate your account.</p>
+            <div class="capture_footer">
+                <a href="#" onclick="window.location.reload()" class="capture_btn capture_primary">Close</a>
+            </div>
+        </div>
+    </div>
+    <div style="display:none;" id="forgotPassword">
+        <div class="capture_header">
+            <h1>Create a new password</h1>
+        </div>
+        <h2>Don't worry, it happens. We'll send you a link to create a new password.</h2>
+        {* #forgotPasswordForm *}
+        {* traditionalSignIn_emailAddress *}
+        <div class="capture_footer">
+            <div class="capture_left">
+                {* backButton *}
+            </div>
+            <div class="capture_right">
+                {* forgotPassword_sendButton *}
+            </div>
+        </div>
+        {* /forgotPasswordForm *}
+    </div>
+
+    <div style="display:none;" id="forgotPasswordSuccess">
+        <div class="capture_header">
+            <h1>Create a new password</h1>
+        </div>
+        <p>We've sent an email with instructions to create a new password. Your existing password has not been changed.</p>
+        <div class="capture_footer">
+            <a href="#" onclick="janrain.capture.ui.modal.close()" class="capture_btn capture_primary">Close</a>
+        </div>
+    </div>
+    <div style="display:none;" id="mergeAccounts">
+        {* mergeAccounts *}
+    </div>
+    <div style="display:none;" id="traditionalAuthenticateMerge">
+        <div class="capture_header">
+            <h1>Sign in to<br />complete account merge</h1>
+        </div>
+        <div class="capture_signin">
+            {* #tradAuthenticateMergeForm *}
+            {* traditionalSignIn_emailAddress *}
+            {* mergePassword *}
+            <div class="capture_footer">
+                <div class="capture_left">
+                    {* backButton *}
+                </div>
+                <div class="capture_right">
+                    {* signInButton *}
+                </div>
+            </div>
+            {* /tradAuthenticateMergeForm *}
+        </div>
+    </div>
+</body>
+</html>
+
+
