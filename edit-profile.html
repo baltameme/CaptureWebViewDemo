@@ -141,10 +141,15 @@
                     }
                 }
                 janrain.events.onCaptureSessionEnded.addHandler(function(flow){
-                    window.location = "index.php";
+                    window.location = "index.html";
                 });
                 janrain.events.onCaptureSessionNotFound.addHandler(function(flow){
-                    window.location = "index.php";
+                    window.location = "index.html";
+                });
+
+                janrain.events.onCaptureRenderComplete.addHandler(function(e){
+                    console.log(e);
+                    $("#captureRetrievingUserDataBuiltIn").hide()
                 });
             }
         </script>
