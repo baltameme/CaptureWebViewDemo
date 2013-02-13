@@ -8,26 +8,6 @@ Instead, the Capture widget can be configured to redirect to the social
 provider's login screen, then on to the Capture UI server, and finally back to
 the original page.
 
-1. An example bare minimum widget setup
-    * skeleton HTML
-        * with appropriate viewport tag
-            <meta name='viewport' content='width: device-width' />
-        * sane and basic set of event hooks registered
-2. How to start the widget on a particular screen / flow
-    * signin flow / trad reg flow
-        janrain.capture.ui.start();
-        janrain.capture.ui.triggerFlow('signIn');
-    * the password reset flow
-        This is included within the signin screen.
-    * the profile edit flow
-    * link account flow
-        janrain.capture.ui.modal.open(screenName)
-3. How to interact with a running widget
-    * Todo: figure out which events fire
-    * setting the access token
-    janrain.capture.ui.createCaptureSession(accessToken)
-    * getting the access token
-
 ### Starting the Widget
 
 The Capture user registration widget handles user registration and related flows.
@@ -43,7 +23,8 @@ include the standard block of widget settings, first run:
 Valid flow names are:
 
  * signIn
- * configured per instance of Capture via the Flows system
+
+Flows are configured per instance of Capture via the Flow system.
 
 #### Widget Settings
 
@@ -63,9 +44,7 @@ operation inside a UIWebView
 
 * janrain.settings.redirectUri = location.href; //required
 
-### Interacting with the Widget
-
-#### Interacting with the UIWebView from the iOS Host App
+### Interacting with the Widget from the iOS Host App
 
 The UIWebView message `+(NSString *)stringByEvaluatingJavaScriptFromString:(NSString *) jsString`
 serves as a bridge to inject and extract information from the UIWebView.
@@ -76,6 +55,28 @@ formed page loads, and responding to the UIWebView-webView:shouldStartLoadWithRe
 For a discussion of this technique and links to implementations see this
 Stackoverflow question: http://stackoverflow.com/questions/9473582/ios-javascript-bridge
 
+#### Setting the Access Token
+
+Call janrain.capture.ui.createCaptureSession(accessToken)
+
+#### Register the onCaptureLoginSuccess getting the access token
+
+    janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
+        if (result.accessToken && !result.oneTime) {
+            document.location.href = "janrain:accessToken=" + result.accessToken;
+        }
+    });
+
+And monitor request URLs in `UIWebView-webView:shouldStartLoadWithRequest:navigationType`:
+
+    if ([request.URL.scheme isEqualToString:@"janrain"])
+    {
+        NSString *token = [[request.URL.absoluteString componentsSeparatedByString:@"="] objectAtIndex:1];
+        [self sendOptionalDelegateMessage:@selector(signInDidSucceedWithAccessToken:) withArgument:token];
+    }
+
 ### An Example
 
-Run
+This Xcode project, CaptureStandardRegistrationFlow, is a working example of
+running the Capture user registration widget in a UIWebView.  It loads static
+pages hosted in the gh-pages branch of this Github repository.

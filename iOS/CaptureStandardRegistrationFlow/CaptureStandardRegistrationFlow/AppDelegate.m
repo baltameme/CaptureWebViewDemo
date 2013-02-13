@@ -33,7 +33,12 @@
 
 - (void)signInDidSucceedWithAccessToken:(NSString *)accessToken
 {
-
+    [((UINavigationController *) self.window.rootViewController) popViewControllerAnimated:YES];
+    self.accessToken = accessToken;
+    NSString *alertMessage = [NSString stringWithFormat:@"Access Token\n%@", accessToken];
+    [[[UIAlertView alloc] initWithTitle:@"Sign-in complete" message:alertMessage delegate:nil
+                     cancelButtonTitle:@"Dismiss"
+                     otherButtonTitles:nil] show];
 }
 
 + (AppDelegate *)sharedDelegate

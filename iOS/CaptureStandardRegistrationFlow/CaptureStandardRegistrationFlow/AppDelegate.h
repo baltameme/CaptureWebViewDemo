@@ -14,8 +14,9 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, CaptureWebViewControllerDelegate>
 
-@property (strong, nonatomic) UIWindow *window;
-@property (strong, nonatomic) CaptureWebViewController *captureController;
+@property(strong, nonatomic) UIWindow *window;
+@property(strong, nonatomic) CaptureWebViewController *captureController;
+@property(nonatomic, strong) NSString *accessToken;
 
 + (AppDelegate *)sharedDelegate;
 @end

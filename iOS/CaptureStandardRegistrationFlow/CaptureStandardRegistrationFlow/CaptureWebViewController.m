@@ -30,6 +30,7 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self setTitle:[[JR_CAPTURE_WEBVIEW_PAGES objectForKey:activePageName] objectForKey:@"title"]];
 }
 
 @synthesize webView;
@@ -51,11 +52,6 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 {
     self.view = self.webView = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
     webView.delegate = self;
-}
-
-- (void)viewDidLoad
-{
-    [self setTitle:[[JR_CAPTURE_WEBVIEW_PAGES objectForKey:activePageName] objectForKey:@"title"]];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -93,20 +89,28 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 }
 
 - (BOOL)webView:(UIWebView *)webView_ shouldStartLoadWithRequest:(NSURLRequest *)request
-navigationType:(UIWebViewNavigationType)navigationType
+ navigationType:(UIWebViewNavigationType)navigationType
 {
-    //DLog(@"webView shouldStartLoadWithRequest %@", request);
+    if ([request.URL.scheme isEqualToString:@"janrain"])
+    {
+        NSString *token = [[request.URL.absoluteString componentsSeparatedByString:@"="] objectAtIndex:1];
+        [self sendOptionalDelegateMessage:@selector(signInDidSucceedWithAccessToken:) withArgument:token];
+    }
+    DLog(@"webView shouldStartLoadWithRequest %@", request);
     return YES;
+}
+
+- (void)sendOptionalDelegateMessage:(SEL)selector withArgument:(id)argument
+{
+    if ([captureDelegate respondsToSelector:selector])
+    {
+        [captureDelegate performSelector:selector withObject:argument];
+    }
 }
 
 - (void)webViewDidFinishLoad:(UIWebView *)webView_
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-}
-
-- (NSString *)getAccesstoken
-{
-    return [webView stringByEvaluatingJavaScriptFromString:@"capture.getAccessToken();"];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView_
