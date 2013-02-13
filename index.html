@@ -184,6 +184,22 @@
                         document.location.href = "janrain:accessToken=" + result.accessToken;
                     }
                 });
+
+                for (var e in janrain.events) {
+                    (function(eventName) {
+                        if (typeof janrain.events[eventName].addHandler === 'undefined') return;
+                        janrain.events[eventName].addHandler(function() {
+                            var argsUrl = "janrain:" + eventName + "?arguments="
+                                    + JSON.stringify(arguments);
+                            if (typeof janrainNativeAppBridgeEnabled !== 'undefined' &&
+                                    janrainNativeAppBridgeEnabled) {
+                                document.location.href = argsUrl;
+                            } else {
+                                niceLog(argsUrl);
+                            }
+                        });
+                    })(e);
+                }
             }
 </script>
     </head>
