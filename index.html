@@ -152,27 +152,8 @@
                     window.location.reload();
                 });
 
-                janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
-                    if (result.accessToken && !result.oneTime) {
-                        document.location.href = "janrain:accessToken=" + result.accessToken;
-                    }
-                });
+                createJanrainBridge();
 
-                for (var e in janrain.events) {
-                    (function(eventName) {
-                        if (typeof janrain.events[eventName].addHandler === 'undefined') return;
-                        janrain.events[eventName].addHandler(function() {
-                            var argsUrl = "janrain:" + eventName + "?arguments="
-                                    + JSON.stringify(arguments);
-                            if (typeof janrainNativeAppBridgeEnabled !== 'undefined' &&
-                                    janrainNativeAppBridgeEnabled) {
-                                document.location.href = argsUrl;
-                            } else {
-                                niceLog(argsUrl);
-                            }
-                        });
-                    })(e);
-                }
             }
 </script>
     </head>
@@ -339,5 +320,6 @@
             {* /tradAuthenticateMergeForm *}
         </div>
     </div>
+    <script src="janrain-bridge.js"></script>
 </body>
 </html>
