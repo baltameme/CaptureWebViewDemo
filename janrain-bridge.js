@@ -4,12 +4,6 @@ function createJanrainBridge(){
         return !!navigator.userAgent.match(/janrainNativeAppBridgeEnabled/);
     }
 
-    janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
-        if (bridgeIsEnabled() && result.accessToken && !result.oneTime) {
-            window.location = "janrain:accessToken=" + result.accessToken;
-        }
-    });
-
     for (var e in janrain.events) {
         if (Object.prototype.hasOwnProperty.call(janrain.events, e)){
             (function(eventName) {
@@ -28,5 +22,11 @@ function createJanrainBridge(){
                 });
             })(e);
         }
+
+        janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
+            if (bridgeIsEnabled() && result.accessToken && !result.oneTime) {
+                window.location = "janrain:accessToken=" + result.accessToken;
+            }
+        });
     }
 }
