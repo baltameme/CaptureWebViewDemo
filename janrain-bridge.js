@@ -1,11 +1,10 @@
 function createJanrainBridge(){
 
     function bridgeIsEnabled(){
-        return !!(typeof janrainNativeAppBridgeEnabled !== 'undefined' && janrainNativeAppBridgeEnabled);
+        return navigator.userAgent.match(/janrainNativeAppBridgeEnabled/);
     }
 
     janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
-        alert(bridgeIsEnabled() + " " + result);
         if (bridgeIsEnabled() && result.accessToken && !result.oneTime) {
             window.location = "janrain:accessToken=" + result.accessToken;
         }
@@ -16,7 +15,13 @@ function createJanrainBridge(){
             (function(eventName) {
                 if (typeof janrain.events[eventName].addHandler === 'undefined') return;
                 janrain.events[eventName].addHandler(function() {
-                    var argsUrl = "janrain:" + eventName + "?arguments=" + encodeURIComponent(JSON.stringify(arguments));
+                    var argsUrl;
+                    try {
+                        argsUrl = "janrain:" + eventName + "?arguments=" + encodeURIComponent(JSON.stringify(arguments));
+                    } catch (e) {
+                        var errString = "error encoding arguments" + e.toString();
+                        argsUrl = "janrain:" + eventName + "?error=" + encodeURIComponent(errString);
+                    }
                     if (bridgeIsEnabled()) {
                         window.location = argsUrl;
                     }
