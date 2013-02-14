@@ -45,6 +45,12 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
                     @"url" : @"http://janrain.github.com/CaptureWebViewDemo/edit-profile.html"
             }
     };
+
+    // Dirty hack to enable the native app JS bridge by altering the UA string:
+    NSString *oldUa = @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Mobile/10A403";
+    NSString *newUa = [NSString stringWithFormat:@"%@ janrainNativeAppBridgeEnabled", oldUa];
+    NSDictionary *dictionary = [NSDictionary dictionaryWithObjectsAndKeys:newUa, @"UserAgent", nil];
+    [[NSUserDefaults standardUserDefaults] registerDefaults:dictionary];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -96,6 +102,13 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
     self.activePageName = flowName;
     [nc pushViewController:self animated:YES];
 }
+
+- (void)setWidgetAccessToken:(NSString *)accessToken
+{
+    NSString *jsStatement = [NSString stringWithFormat:@"janrain.capture.ui.createCaptureSession(%@);", accessToken];
+    [webView stringByEvaluatingJavaScriptFromString:jsStatement];
+}
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -157,7 +170,6 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 - (void)webViewDidFinishLoad:(UIWebView *)webView_
 {
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
-    [webView stringByEvaluatingJavaScriptFromString:@"janrainNativeAppBridgeEnabled = true;"];
 }
 
 - (void)webViewDidStartLoad:(UIWebView *)webView_

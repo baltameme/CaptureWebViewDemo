@@ -16,4 +16,6 @@
 
 //- (void)presentFlow:(id)flow fromViewController:(UIViewController *)vc;
 
+- (void)setWidgetAccessToken:(NSString *)accessToken;
+
 @end
