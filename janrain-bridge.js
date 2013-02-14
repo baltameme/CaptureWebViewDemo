@@ -5,6 +5,7 @@ function createJanrainBridge(){
     }
 
     janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
+        alert(bridgeIsEnabled() + " " + result);
         if (bridgeIsEnabled() && result.accessToken && !result.oneTime) {
             window.location = "janrain:accessToken=" + result.accessToken;
         }
