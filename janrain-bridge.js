@@ -1,10 +1,11 @@
 function createJanrainBridge(){
 
     function bridgeIsEnabled(){
-        return navigator.userAgent.match(/janrainNativeAppBridgeEnabled/);
+        return !!navigator.userAgent.match(/janrainNativeAppBridgeEnabled/);
     }
 
     janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
+        alert(bridgeIsEnabled() + " " + result.toString())
         if (bridgeIsEnabled() && result.accessToken && !result.oneTime) {
             window.location = "janrain:accessToken=" + result.accessToken;
         }
