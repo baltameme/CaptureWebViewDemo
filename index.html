@@ -82,6 +82,7 @@
             }
 
             function janrainCaptureWidgetOnLoad() {
+                createJanrainBridge();
                 janrain.capture.ui.start();
 
                 janrain.events.onCaptureLoginSuccess.addHandler(function(result){
@@ -90,8 +91,6 @@
                 janrain.events.onCaptureSessionEnded.addHandler(function(result){
                     window.location.reload();
                 });
-
-                createJanrainBridge();
             }
         </script>
     </head>
