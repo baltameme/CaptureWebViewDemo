@@ -29,7 +29,7 @@
 - (void)signInDidSucceedWithAccessToken:(NSDictionary *)signInResult
 {
     [((UINavigationController *) self.window.rootViewController) popViewControllerAnimated:YES];
-    self.accessToken = [signInResult objectForKey:@"access_token"];
+    self.accessToken = [signInResult objectForKey:@"accessToken"];
     [[[UIAlertView alloc] initWithTitle:@"Sign-in complete" message:[signInResult description] delegate:nil
                       cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
 }
