@@ -37,11 +37,11 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 {
     JR_CAPTURE_WEBVIEW_PAGES = @{
             @"signin" : @{
-                    @"title" : @"Sign In",
+                    @"title" : @"",
                     @"url" : @"http://janrain.github.com/CaptureWebViewDemo/index.html"
             },
             @"profile" : @{
-                    @"title" : @"Update Profile",
+                    @"title" : @"",
                     @"url" : @"http://janrain.github.com/CaptureWebViewDemo/edit-profile.html"
             }
     };
@@ -69,6 +69,13 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self)
     {
+        self.jsEventHandlers = [NSMutableDictionary dictionary];
+        [self.jsEventHandlers setObject:[NSMutableArray array]forKey:@"onCaptureLoginSuccess"];
+        [[self.jsEventHandlers objectForKey:@"onCaptureLoginSuccess"] addObject:[^(id eventArgs){
+            NSDictionary *result = [eventArgs objectAtIndex:0];
+            [self sendOptionalDelegateMessage:@selector(signInDidSucceedWithAccessToken:) withArgument:result];
+        } copy]];
+
         self.captureDelegate = delegate;
     }
     return self;
@@ -103,12 +110,11 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
     [nc pushViewController:self animated:YES];
 }
 
-- (void)setWidgetAccessToken:(NSString *)accessToken
-{
-    NSString *jsStatement = [NSString stringWithFormat:@"janrain.capture.ui.createCaptureSession(%@);", accessToken];
-    [webView stringByEvaluatingJavaScriptFromString:jsStatement];
-}
-
+//- (void)setWidgetAccessToken:(NSString *)accessToken
+//{
+//    NSString *jsStatement = [NSString stringWithFormat:@"janrain.capture.ui.createCaptureSession(%@);", accessToken];
+//    [webView stringByEvaluatingJavaScriptFromString:jsStatement];
+//}
 
 - (void)didReceiveMemoryWarning
 {
@@ -121,42 +127,68 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
     [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
+- (void)parseAndDispatchEventUrl:(NSString *)argsUrl
+{
+    // argsUrl will look like: janrain:eventNameHere?arguments=URL%20ENCODED%20JSON%20ARRAY%20HERE
+    NSString *pathString = [argsUrl substringFromIndex:[@"janrain:" length]];
+    NSArray *pathComponents = [pathString componentsSeparatedByString:@"?"];
+    NSString *eventName = [pathComponents objectAtIndex:0];
+    NSString *argsComponent = [pathComponents objectAtIndex:1];
+    NSArray *argPairs = [argsComponent componentsSeparatedByString:@"&"];
+    NSMutableDictionary *argsDict = [NSMutableDictionary dictionary];
+    for (id argPair in argPairs)
+    {
+        NSArray *sides = [argPair componentsSeparatedByString:@"="];
+        [argsDict setObject:[sides objectAtIndex:1] forKey:[sides objectAtIndex:0]];
+    }
+
+    NSString *eventArgsJson = [[argsDict objectForKey:@"arguments"] stringByUrlDecoding];
+    NSData *eventArgsJsonData = [eventArgsJson dataUsingEncoding:NSUTF8StringEncoding];
+    id eventArgs = [NSJSONSerialization JSONObjectWithData:eventArgsJsonData options:0 error:nil];
+
+    // probably should use NSNotificationCenter instead
+    NSArray *handlers = [self.jsEventHandlers objectForKey:eventName];
+    for (void (^h)(NSArray *) in handlers)
+    {
+        h(eventArgs);
+    }
+
+    NSString *argsDescription = ([[eventArgs description] length] > 100) ?
+            [[eventArgs description] substringToIndex:80] : [eventArgs description];
+    DLog(@"event: %@ args: %@", eventName, argsDescription);
+}
+
 - (BOOL)webView:(UIWebView *)webView_ shouldStartLoadWithRequest:(NSURLRequest *)request
  navigationType:(UIWebViewNavigationType)navigationType
 {
     if ([request.URL.scheme isEqualToString:@"janrain"])
     {
-        if ([request.URL.absoluteString hasPrefix:@"janrain:accessToken"])
-        {
-            NSString *token = [[request.URL.absoluteString componentsSeparatedByString:@"="] objectAtIndex:1];
-            [self sendOptionalDelegateMessage:@selector(signInDidSucceedWithAccessToken:) withArgument:token];
-        }
-        else
-        {
-            // General case of JS <-> host event bridging
-            NSString *pathString = [request.URL.absoluteString substringFromIndex:[@"janrain:" length]];
-            NSArray *pathComponents = [pathString componentsSeparatedByString:@"?"];
-            NSString *eventName = [pathComponents objectAtIndex:0];
-            NSString *argsComponent = [pathComponents objectAtIndex:1];
-            NSArray *argPairs = [argsComponent componentsSeparatedByString:@"&"];
-            NSMutableDictionary *argsDict = [NSMutableDictionary dictionary];
-            for (id argPair in argPairs)
-            {
-                NSArray *sides = [argPair componentsSeparatedByString:@"="];
-                [argsDict setObject:[sides objectAtIndex:1] forKey:[sides objectAtIndex:0]];
-            }
-
-            NSString *eventArgsJson = [[argsDict objectForKey:@"arguments"] stringByUrlDecoding];
-            NSData *eventArgsJsonData = [eventArgsJson dataUsingEncoding:NSUTF8StringEncoding];
-            id eventArgs = [NSJSONSerialization JSONObjectWithData:eventArgsJsonData options:0 error:nil];
-
-            DLog(@"event: %@ args: %@", eventName, eventArgs);
-
-            return NO;
-        }
+        [self dispatchEventQueue];
+        return NO;
     }
     DLog(@"webView shouldStartLoadWithRequest %@", request);
     return YES;
+}
+
+- (void)dispatchEventQueue
+{
+    // Pulls events out of JS bridge queue
+    NSString *bridgeJson = [webView stringByEvaluatingJavaScriptFromString:@""
+            "(function() {"
+            "    if (typeof createJanrainBridge.eventQueue === 'undefined') return \"undefined queue\";"
+            "    var t = JSON.stringify(createJanrainBridge.eventQueue);"
+            "    createJanrainBridge.eventQueue.length = 0;"
+            "    return t;"
+            "})();"];
+
+    NSArray *queuedEventUrls =
+            [NSJSONSerialization JSONObjectWithData:[bridgeJson dataUsingEncoding:NSUTF8StringEncoding] options:0
+                                              error:nil];
+
+    for (NSString *eventUrl in queuedEventUrls)
+    {
+        [self parseAndDispatchEventUrl:eventUrl];
+    }
 }
 
 - (void)sendOptionalDelegateMessage:(SEL)selector withArgument:(id)argument
