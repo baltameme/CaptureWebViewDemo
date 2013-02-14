@@ -10,9 +10,10 @@
 function createJanrainBridge(){
     var bridgeIsEnabled = !!navigator.userAgent.match(/janrainNativeAppBridgeEnabled/);
 
-    var iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    document.body.appendChild(iframe);
+    var eventNotificationFrame = document.createElement("iframe");
+    createJanrainBridge.eventQueue = [];
+    eventNotificationFrame.style.display = "none";
+    document.body.appendChild(eventNotificationFrame);
 
     for (var e in janrain.events) {
         if (Object.prototype.hasOwnProperty.call(janrain.events, e)){
@@ -27,7 +28,9 @@ function createJanrainBridge(){
                         argsUrl = "janrain:" + eventName + "?error=" + encodeURIComponent(errString);
                     }
                     if (bridgeIsEnabled) {
-                        iframe.src = argsUrl;
+                        eventNotificationFrame.src =
+                            "janrain:eventsAvailable?" + (new Date()).getTime();
+                        createJanrainBridge.eventQueue.push(argsUrl);
                     }
                 });
             })(e);
