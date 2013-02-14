@@ -11,9 +11,8 @@ function createJanrainBridge(){
     var bridgeIsEnabled = !!navigator.userAgent.match(/janrainNativeAppBridgeEnabled/);
 
     var iframe = document.createElement("iframe");
-    iframe.style.display = none;
+    iframe.style.display = "none";
     document.body.appendChild(iframe);
-
 
     for (var e in janrain.events) {
         if (Object.prototype.hasOwnProperty.call(janrain.events, e)){
