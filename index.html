@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=2.0" />
@@ -10,52 +9,7 @@
             .capture_modal_open {display: block;}
             .capture_btn_full {text-align: center;}
         </style>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
         <script type="text/javascript">
-
-            // set up the navigation
-            $(document).ready(function() {
-
-                // on sign out, tell the widget to destroy the session
-                $('#signOut').click(function() {
-
-                    if (confirm("Really sign out?")) {
-                        janrain.events.onCaptureSessionEnded.addHandler(function(result){
-                            window.location.reload();
-                        });
-                    }
-
-                    return false;
-                });
-
-            });
-
-            // call our code/token exchanger, and use the token to set up a capture session
-            function getTokenForCode(code, redirect_uri) {
-
-                var url = "code-token-exchanger.php?auth_code=" + code + "&redirect_uri=" + redirect_uri;
-
-                $.getJSON(url, function(data) {
-
-                    console.log("data from call to code-token-exchanger.php:")
-                    console.log(data);
-
-                    janrain.capture.ui.createCaptureSession(data.access_token);
-
-                });
-            }
-
-
-            // simple logging wrapper
-            function niceLog(message) {
-                if (window.console && window.console.log) {
-                    console.log (message);
-                }
-                else {
-                    alert (message);
-                }
-            }
-
 
             (function() {
                 if (typeof window.janrain !== 'object') window.janrain = {};
@@ -130,22 +84,7 @@
             function janrainCaptureWidgetOnLoad() {
                 janrain.capture.ui.start();
 
-                function handleCaptureLogin(result) {
-
-                    niceLog ("result:");
-                    niceLog (result);
-
-                    if (janrain.settings.capture.responseType == 'code') {
-                        niceLog ("exchanging code for token...");
-                        getTokenForCode(result.authorizationCode, "http://example.com/");
-                        janrain.capture.ui.modal.close();
-                    }
-                    else if (janrain.settings.capture.responseType == 'token') {
-                        janrain.capture.ui.modal.close();
-                    }
-                }
                 janrain.events.onCaptureLoginSuccess.addHandler(function(result){
-                    janrain.capture.ui.modal.close();
                     window.location.reload();
                 });
                 janrain.events.onCaptureSessionEnded.addHandler(function(result){
@@ -155,7 +94,7 @@
                 createJanrainBridge();
 
             }
-</script>
+    </script>
     </head>
     <body>
         <div id="activeSessionDisplay" class="grid-block" style="display: none;">
