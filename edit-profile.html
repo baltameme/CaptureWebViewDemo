@@ -81,12 +81,6 @@
             janrain.events.onCaptureSessionEnded.addHandler(redirectToIndex);
             janrain.events.onCaptureSessionNotFound.addHandler(redirectToIndex);
 
-            janrain.events.onCaptureRenderComplete.addHandler(function(){
-                if (document.getElementById("captureRetrievingUserDataBuiltIn")){
-                    document.getElementById("captureRetrievingUserDataBuiltIn").style.display = 'none';
-                }
-            });
-
             createJanrainBridge();
         }
         </script>
