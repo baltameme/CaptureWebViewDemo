@@ -11,7 +11,7 @@
             window.janrain.settings.capture = {};
 
             janrain.settings.appUrl = 'https://capturewidget.rpxnow.com';
-            janrain.settings.capture.redirectUri = location.href;
+            janrain.settings.capture.redirectUri = window.location.href.split('#')[0];
             janrain.settings.capture.appId= '25qk3n4rkvgcwpk2y38vypzh49';
             janrain.settings.capture.clientId = 'nzmzztgpkst59sgnfntbp56xwacmb735';
             janrain.settings.capture.responseType = 'token';
