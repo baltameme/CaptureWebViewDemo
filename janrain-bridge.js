@@ -1,8 +1,15 @@
+/*
+ * Adds handlers to 'janrain.events' that will be used to emit
+ * the handler's arguments as JSON through a URL change.
+ *
+ * This allows the host iOS app to listen to Janrain JavaScript events.
+ *
+ * 'createJanrainBridge()' should be called within the global
+ * 'janrainCaptureWidgetOnLoad()' function.
+ */
 function createJanrainBridge(){
 
-    function bridgeIsEnabled(){
-        return !!navigator.userAgent.match(/janrainNativeAppBridgeEnabled/);
-    }
+    var bridgeIsEnabled = !!navigator.userAgent.match(/janrainNativeAppBridgeEnabled/);
 
     for (var e in janrain.events) {
         if (Object.prototype.hasOwnProperty.call(janrain.events, e)){
@@ -16,7 +23,7 @@ function createJanrainBridge(){
                         var errString = "error encoding arguments" + e.toString();
                         argsUrl = "janrain:" + eventName + "?error=" + encodeURIComponent(errString);
                     }
-                    if (bridgeIsEnabled()) {
+                    if (bridgeIsEnabled) {
                         window.location = argsUrl;
                     }
                 });
@@ -24,7 +31,7 @@ function createJanrainBridge(){
         }
 
         janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
-            if (bridgeIsEnabled() && result.accessToken && !result.oneTime) {
+            if (bridgeIsEnabled && result.accessToken && !result.oneTime) {
                 window.location = "janrain:accessToken=" + result.accessToken;
             }
         });
