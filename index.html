@@ -58,7 +58,7 @@
                 janrain.settings.packages = ['login', 'capture'];
 
 
-                function isReady() { janrain.ready = true; };
+                function isReady() { janrain.ready = true; }
                 if (document.addEventListener) {
                  document.addEventListener("DOMContentLoaded", isReady, false);
                 } else {
@@ -67,7 +67,7 @@
 
                 var e = document.createElement('script');
                 e.type = 'text/javascript';
-                e.id = 'janrainAuthWidget'
+                e.id = 'janrainAuthWidget';
 
                 var url = document.location.protocol === 'https:' ? 'https://' : 'http://';
                 url += 'd16s8pqtk4uodx.cloudfront.net';
@@ -85,12 +85,9 @@
                 createJanrainBridge();
                 janrain.capture.ui.start();
 
-//                janrain.events.onCaptureLoginSuccess.addHandler(function(result){
-//                    window.location.reload();
-//                });
-//                janrain.events.onCaptureSessionEnded.addHandler(function(result){
-//                    window.location.reload();
-//                });
+                janrain.events.onCaptureSessionEnded.addHandler(function(result){
+                    janrain.capture.ui.renderScreen('signIn')
+                });
             }
         </script>
     </head>
@@ -100,7 +97,8 @@
                 <div class="contentBoxWhiteShadow">
                     <h2>Hello {* displayNameData *}</h2>
                     <p><b>Now that you're logged in&hellip;</b></p>
-                    <a href="edit-profile" class="capture_btn_full capture_btn capture_primary"><span class="janrain-icon-16 janrain-icon-pencil"></span> Edit Profile</a> <a href="#" class="capture_end_session capture_btn capture_primary capture_btn_full"><span class="janrain-icon-16 janrain-icon-ex2"></span> Sign Out</a>
+                    <a href="edit-profile" class="capture_btn_full capture_btn capture_primary"><span class="janrain-icon-16 janrain-icon-pencil"></span> Edit Profile</a>
+                    <a href="#" class="capture_end_session capture_btn capture_primary capture_btn_full"><span class="janrain-icon-16 janrain-icon-ex2"></span> Sign Out</a>
                 </div>
             </div>
         </div>
@@ -207,56 +205,56 @@
                 <a href="#" onclick="window.location.reload()" class="capture_btn capture_primary">Close</a>
             </div>
         </div>
-    </div>
-    <div style="display:none;" id="forgotPassword">
-        <div class="capture_header">
-            <h1>Create a new password</h1>
-        </div>
-        <h2>Don't worry, it happens. We'll send you a link to create a new password.</h2>
-        {* #forgotPasswordForm *}
-        {* traditionalSignIn_emailAddress *}
-        <div class="capture_footer">
-            <div class="capture_left">
-                {* backButton *}
-            </div>
-            <div class="capture_right">
-                {* forgotPassword_sendButton *}
-            </div>
-        </div>
-        {* /forgotPasswordForm *}
-    </div>
 
-    <div style="display:none;" id="forgotPasswordSuccess">
-        <div class="capture_header">
-            <h1>Create a new password</h1>
-        </div>
-        <p>We've sent an email with instructions to create a new password. Your existing password has not been changed.</p>
-        <div class="capture_footer">
-            <a href="#" onclick="janrain.capture.ui.modal.close()" class="capture_btn capture_primary">Close</a>
-        </div>
-    </div>
-    <div style="display:none;" id="mergeAccounts">
-        {* mergeAccounts *}
-    </div>
-    <div style="display:none;" id="traditionalAuthenticateMerge">
-        <div class="capture_header">
-            <h1>Sign in to<br />complete account merge</h1>
-        </div>
-        <div class="capture_signin">
-            {* #tradAuthenticateMergeForm *}
+        <div style="display:none;" id="forgotPassword">
+            <div class="capture_header">
+                <h1>Create a new password</h1>
+            </div>
+            <h2>Don't worry, it happens. We'll send you a link to create a new password.</h2>
+            {* #forgotPasswordForm *}
             {* traditionalSignIn_emailAddress *}
-            {* mergePassword *}
             <div class="capture_footer">
                 <div class="capture_left">
                     {* backButton *}
                 </div>
                 <div class="capture_right">
-                    {* signInButton *}
+                    {* forgotPassword_sendButton *}
                 </div>
             </div>
-            {* /tradAuthenticateMergeForm *}
+            {* /forgotPasswordForm *}
         </div>
-    </div>
-    <script src="janrain-bridge.js"></script>
-</body>
+
+        <div style="display:none;" id="forgotPasswordSuccess">
+            <div class="capture_header">
+                <h1>Create a new password</h1>
+            </div>
+            <p>We've sent an email with instructions to create a new password. Your existing password has not been changed.</p>
+            <div class="capture_footer">
+                <a href="#" onclick="janrain.capture.ui.modal.close()" class="capture_btn capture_primary">Close</a>
+            </div>
+        </div>
+        <div style="display:none;" id="mergeAccounts">
+            {* mergeAccounts *}
+        </div>
+        <div style="display:none;" id="traditionalAuthenticateMerge">
+            <div class="capture_header">
+                <h1>Sign in to<br />complete account merge</h1>
+            </div>
+            <div class="capture_signin">
+                {* #tradAuthenticateMergeForm *}
+                {* traditionalSignIn_emailAddress *}
+                {* mergePassword *}
+                <div class="capture_footer">
+                    <div class="capture_left">
+                        {* backButton *}
+                    </div>
+                    <div class="capture_right">
+                        {* signInButton *}
+                    </div>
+                </div>
+                {* /tradAuthenticateMergeForm *}
+            </div>
+        </div>
+        <script src="janrain-bridge.js"></script>
+    </body>
 </html>
