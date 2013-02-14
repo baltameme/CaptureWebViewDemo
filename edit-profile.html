@@ -50,7 +50,7 @@
             janrain.settings.packages = ['login', 'capture'];
 
 
-            function isReady() { janrain.ready = true; };
+            function isReady() { janrain.ready = true; }
             if (document.addEventListener) {
                 document.addEventListener("DOMContentLoaded", isReady, false);
             } else {
@@ -59,7 +59,7 @@
 
             var e = document.createElement('script');
             e.type = 'text/javascript';
-            e.id = 'janrainAuthWidget'
+            e.id = 'janrainAuthWidget';
 
             var url = document.location.protocol === 'https:' ? 'https://' : 'http://';
             url += 'd16s8pqtk4uodx.cloudfront.net';
@@ -187,7 +187,7 @@
         </div>
     {* /editContactForm *}
   </div>
-  <div style="display:none;" id="editPassword">
+    <div style="display:none;" id="editPassword">
         <div class="capture_header">
             <h1>Change password</h1>
         </div>
