@@ -8,8 +8,12 @@
  * 'janrainCaptureWidgetOnLoad()' function.
  */
 function createJanrainBridge(){
-
     var bridgeIsEnabled = !!navigator.userAgent.match(/janrainNativeAppBridgeEnabled/);
+
+    var iframe = document.createElement("iframe");
+    iframe.style.display = none;
+    document.body.appendChild(iframe);
+
 
     for (var e in janrain.events) {
         if (Object.prototype.hasOwnProperty.call(janrain.events, e)){
@@ -24,7 +28,7 @@ function createJanrainBridge(){
                         argsUrl = "janrain:" + eventName + "?error=" + encodeURIComponent(errString);
                     }
                     if (bridgeIsEnabled) {
-                        window.location = argsUrl;
+                        iframe.src = argsUrl;
                     }
                 });
             })(e);
