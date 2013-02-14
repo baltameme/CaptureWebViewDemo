@@ -22,7 +22,8 @@ function createJanrainBridge(){
                 janrain.events[eventName].addHandler(function() {
                     var argsUrl;
                     try {
-                        argsUrl = "janrain:" + eventName + "?arguments=" + encodeURIComponent(JSON.stringify(arguments));
+                        var argsJson = encodeURIComponent(JSON.stringify(Array.prototype.slice.call(arguments, 0)));
+                        argsUrl = "janrain:" + eventName + "?arguments=" + argsJson;
                     } catch (e) {
                         var errString = "error encoding arguments" + e.toString();
                         argsUrl = "janrain:" + eventName + "?error=" + encodeURIComponent(errString);
