@@ -29,11 +29,5 @@ function createJanrainBridge(){
                 });
             })(e);
         }
-
-        janrain.events.onCaptureLoginSuccess.addHandler(function (result) {
-            if (bridgeIsEnabled && result.accessToken && !result.oneTime) {
-                window.location = "janrain:accessToken=" + result.accessToken;
-            }
-        });
     }
 }
