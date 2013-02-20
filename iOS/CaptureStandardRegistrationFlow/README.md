@@ -11,7 +11,7 @@ the original page.
 ### Example HTML Files
 
 * [Example Index Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index.html)
-
+* [Example Index Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index-oneflow.html)
 * [Example Edit Profile Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/edit-profile.html)
 
 ### Starting the Widget
@@ -24,6 +24,8 @@ include the standard block of widget settings, and then run:
 
 Flows are configured separately for each instance of Capture, and can be customized.
 This example uses ~iPhone optimized flows named webViewProfile and webViewSignIn.
+If you so choose, you can use the webViewDemo flow name with the markup in index-oneflow.html
+to have all screens on one page using one flow.
 
 #### Widget Settings
 
