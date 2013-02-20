@@ -11,7 +11,7 @@ the original page.
 ### Example HTML Files
 
 * [Example Index Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index.html)
-* [Example Index Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index-oneflow.html)
+* [Example Page With All Screens Using One FLow](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index-oneflow.html)
 * [Example Edit Profile Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/edit-profile.html)
 
 ### Starting the Widget
