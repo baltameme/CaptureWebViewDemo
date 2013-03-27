@@ -70,7 +70,7 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
     if (self)
     {
         self.jsEventHandlers = [NSMutableDictionary dictionary];
-        [self.jsEventHandlers setObject:[NSMutableArray array]forKey:@"onCaptureLoginSuccess"];
+        [self.jsEventHandlers setObject:[NSMutableArray array] forKey:@"onCaptureLoginSuccess"];
         [[self.jsEventHandlers objectForKey:@"onCaptureLoginSuccess"] addObject:[^(id eventArgs){
             NSDictionary *result = [eventArgs objectAtIndex:0];
             [self sendOptionalDelegateMessage:@selector(signInDidSucceedWithAccessToken:) withArgument:result];
