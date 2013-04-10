@@ -19,7 +19,7 @@ Your native mobile application loads the Capture sign-in page in a
 sentinel value when running Capture in an embedded browser. In this 
 case the `redirect_uri` must serve *both* as a sentinel value and as a 
 pointer to the app-specific password reset page. Adjust the sentinel 
-detection code in your `UIWebViewDelegate` to adjust.
+detection logic in your `UIWebViewDelegate` to adjust.
 
 #### Step 2 - The User Initiates Password Reset from the Sign-In Page:
 
@@ -28,7 +28,7 @@ They do this by tapping the password reset link in the sign-in page.
 
 Capture then sends a user a password reset email, containing a password
 reset link. The link is exactly the `redirect_uri` parameter used to
-load the sign-in page, with an oauth code appended.
+load the sign-in page, with an oauth token appended.
 
 #### Step 3 - The User Opens the Password-Reset Email
 
@@ -44,29 +44,21 @@ their mobile browser and points to your `password_reset.php` page.
 
 Your `password_reset.php` page loads:
 
- 1. It reads the `code` parameter from the GET request
- 2. It exchanges the `code` for a token by initiating a server to server
-   call to `https://your_capture_domain/oauth/token`.
-   It passes in the `code` (read from step 1), the `redirect_uri` used to 
-   generate the `code` (e.g. 
-   `https://yourdomain.com/password_reset.php`), and the `grant_type`
-   (which is "code" for codes.)
- 3. `https://your_capture_domain/oauth/token` returns a `token` in 
-    its JSON response.
- 4. Your password reset page renders, using the `token` to generate
+ 1. It reads the `token` parameter from the GET request
+ 2. Your password reset page renders, using the `token` to generate
     an `iframe` tag loading the Capture change-password iframe.
 
-The src attribute of the Capture iframe tag rendered in step 4 is like this:
+The src attribute for the Capture iframe tag rendered in step 4 is:
 
     https://your_capture_domain/oauth/profile_change_password?
-    token=the_token_from_step_3
+    token=the_token_from_step_1
     &callback=nameOfYourPasswordChangeCallback
     &xd_receiver=url_to_xdcomm.html
 
 The JavaScript callback (called `nameOfYourPasswordChangeCallback` 
 above,) will be invoked after the user has changed their password.
-`password_reset.php` includes the code for this callback. The callback is
-used to open your app's [custom URL scheme](http://developer.apple.com/library/ios/#documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/AdvancedAppTricks/AdvancedAppTricks.html).
+`password_reset.php` includes the source code for this callback. The
+callback is used to open your app's [custom URL scheme](http://developer.apple.com/library/ios/#documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/AdvancedAppTricks/AdvancedAppTricks.html).
 
 **Warning**: Your page must reference a local copy of xdcomm.html for the
 callback to be invoked after password reset.
