@@ -11,7 +11,7 @@ Your native mobile application loads the Capture sign-in page in a
 `UIWebView`. The URL of this page is:  
 
     https://your_capture_domain/oauth/signin?
-    response_type=token
+    response_type=code_and_token
     &redirect_uri=https://yourdomain.com/password_reset.php
     &client_id=your_mobile_apps_client_id
 
@@ -28,7 +28,7 @@ They do this by tapping the password reset link in the sign-in page.
 
 Capture then sends a user a password reset email, containing a password
 reset link. The link is exactly the `redirect_uri` parameter used to
-load the sign-in page, with an oauth token appended.
+load the sign-in page, with an oauth code appended.
 
 #### Step 3 - The User Opens the Password-Reset Email
 
@@ -44,14 +44,21 @@ their mobile browser and points to your `password_reset.php` page.
 
 Your `password_reset.php` page loads:
 
- 1. It reads the `token` parameter from the GET request
- 2. Your password reset page renders, using the `token` to generate
-    an `iframe` tag loading the Capture change-password iframe.
+ 1. It reads the `code` parameter from the GET request
+ 2. It exchanges the `code` for a token by initiating a server to server
+   call to `https://your_capture_domain/oauth/token`.
+   It passes in the `code` (read from step 1), the `redirect_uri` used to
+   generate the `code` (e.g.
+   `https://yourdomain.com/password_reset.php`), and the `grant_type`
+   (which is "code" for codes.)
+ 3. `https://your_capture_domain/oauth/token` returns a `token` in
+    its JSON response.
+ 4. Your password reset page renders, using the `token` to generate
 
 The src attribute for the Capture iframe tag rendered in step 4 is:
 
     https://your_capture_domain/oauth/profile_change_password?
-    token=the_token_from_step_1
+    token=the_token_from_step_3
     &callback=nameOfYourPasswordChangeCallback
     &xd_receiver=url_to_xdcomm.html
 
