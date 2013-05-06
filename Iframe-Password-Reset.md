@@ -53,7 +53,8 @@ Your `password_reset.php` page loads:
    (which is "code" for codes.)
  3. `https://your_capture_domain/oauth/token` returns a `token` in
     its JSON response.
- 4. Your password reset page renders, using the `token` to generate
+ 4. Your password reset page renders, using the `token` to generate an
+    iframe tag embedding the Capture profile_change_password iframe.
 
 The src attribute for the Capture iframe tag rendered in step 4 is:
 
