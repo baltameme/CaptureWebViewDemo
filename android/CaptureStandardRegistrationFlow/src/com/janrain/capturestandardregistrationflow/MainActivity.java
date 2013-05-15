@@ -39,6 +39,7 @@ public class MainActivity extends Activity implements OnClickListener {
             break;
 
         case R.id.btnEditProfile:
+            intent = new Intent(this, EditProfileActivity.class);
             break;
 
         default:

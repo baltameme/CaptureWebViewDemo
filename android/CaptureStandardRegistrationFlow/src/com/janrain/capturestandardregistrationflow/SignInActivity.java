@@ -1,16 +1,17 @@
 package com.janrain.capturestandardregistrationflow;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -20,7 +21,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class SignInActivity extends Activity {
+public class SignInActivity extends FragmentActivity implements SignInCompleteDialogFragment.NoticeDialogListener {
+    private static final String ANDROID_NS = "demo";
     private static final String SCHEME_JANRAIN = "janrain";
 
     private static final boolean isSchemeJanrain(final String url) {
@@ -32,19 +34,40 @@ public class SignInActivity extends Activity {
                 if (scheme.equalsIgnoreCase(SCHEME_JANRAIN)) {
                     result = true;
                 }
-            }            
+            }
         }
         return result;
     }
 
     public class WebAppInterface {
-        private static final String LOG_TAG = "WebAppInterface";
+        private static final String SIGNIN_COMPLETE_TAG = "signin complete";
+		private static final String LOG_TAG = "WebAppInterface";
 
-        Context mContext;
+        private Context mContext;
 
         /** Instantiate the interface and set the context */
         WebAppInterface(Context context) {
             mContext = context;
+        }
+
+        private void  showSignInCompleteDialogFragment(final JSONArray jArray) {
+            final FragmentManager fragmentManager = getSupportFragmentManager();
+            final FragmentTransaction ft = fragmentManager.beginTransaction();
+
+            final Fragment prev = fragmentManager.findFragmentByTag(SIGNIN_COMPLETE_TAG);
+            if (prev != null) {
+                ft.remove(prev);
+            }
+            ft.addToBackStack(null);
+
+        	String jArrayString = jArray.toString();
+			try {
+				jArrayString = jArray.toString(4);
+			} catch (JSONException e) {
+			}
+            final DialogFragment dialogFrag = new SignInCompleteDialogFragment(jArrayString);
+
+            dialogFrag.show(fragmentManager, SIGNIN_COMPLETE_TAG);
         }
 
         private void parseAndDispatchEventUrl(final String argsUrl) {
@@ -70,39 +93,35 @@ public class SignInActivity extends Activity {
                     final String ON_CAPTURE_LOGIN_SUCCESS = "onCaptureLoginSuccess";
 
                     if (eventName.equals(ON_CAPTURE_LOGIN_SUCCESS)) {
-                        final String ARGUMENTS = "arguments";
-
-                        final Uri uri = Uri.parse(argsUrl);
-                        final String paramKey = uri
-                                .getQueryParameter(ARGUMENTS);
-                        final String urlEncodedJsonValue = uri
-                                .getQueryParameter(paramKey);
                         String jsonValue = null;
+
+                        final String uriString = Uri.decode(argsUrl);
+
+                        if (uriString != null) {
+                            final String ARGUMENTS = "arguments" + "=";
+
+                        	final int index = uriString.indexOf(ARGUMENTS);
+                        	if (index >= 0) {
+                            	final int start = index + ARGUMENTS.length();
+                            	jsonValue = uriString.substring(start);
+                        	}
+                        }
+                        JSONArray jArray = null;
                         try {
-                            jsonValue = URLDecoder.decode(urlEncodedJsonValue,
-                                    "UTF-8");
-                        } catch (UnsupportedEncodingException e) {
+                            jArray = new JSONArray(jsonValue);
+                        } catch (JSONException e) {
                         }
-                        if (jsonValue == null) {
-                            Log.e(LOG_TAG, "Invalid URL Encoding");
-                        } else {
-                            JSONArray jArray = null;
-                            try {
-                                jArray = new JSONArray(jsonValue);
-                            } catch (JSONException e) {
-                            }
-                            if (jArray == null) {
-                                Log.e(LOG_TAG, "Invalid JSON Array format");
-                            } else {
-                                CaptureStandardRegistrationFlow appState = (CaptureStandardRegistrationFlow) mContext
-                                        .getApplicationContext();
-                                final EventSubject eventSubject = appState
-                                        .getEventSubject();
-                                eventSubject.setEventData(jArray);
-                                final Thread t = new Thread(eventSubject);
-                                t.start();
-                            }
-                        }
+						if (jArray != null) {
+							showSignInCompleteDialogFragment(jArray);
+							CaptureStandardRegistrationFlow appState = (CaptureStandardRegistrationFlow) getApplication();
+							final EventSubject eventSubject = appState
+									.getEventSubject();
+							eventSubject.setEventData(jArray);
+							final Thread t = new Thread(eventSubject);
+							t.start();
+						} else {
+							Log.e(LOG_TAG, "Invalid JSON Array format");
+						}
                     } else {
                         Log.i(LOG_TAG, "Ignored Event: " + eventName);
                     }
@@ -112,7 +131,7 @@ public class SignInActivity extends Activity {
             }
         }
 
-        void dispatchEventQueue(final String eventQueueString) {
+        private void dispatchEventQueue(final String eventQueueString) {
             JSONArray jArray = null;
             try {
                 jArray = new JSONArray(eventQueueString);
@@ -167,7 +186,7 @@ public class SignInActivity extends Activity {
     }
 
     public class MyWebViewClient extends WebViewClient {
-        // private static final String LOG_TAG = "MyWebViewClient";
+        private static final String LOG_TAG = "MyWebViewClient";
         
         private JavascriptBridgeInterface mJavascriptBridgeInterface;
 
@@ -207,8 +226,6 @@ public class SignInActivity extends Activity {
 //        }
     }
 
-    private static final String ANDROID_NS = "demo";
-
     private WebView mWebView;
 
     private Handler mHandler = new Handler();
@@ -247,4 +264,9 @@ public class SignInActivity extends Activity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
+
+	@Override
+	public void onDialogDismiss(DialogFragment dialogFragment) {
+		finish();
+	}
 }
