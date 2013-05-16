@@ -50,7 +50,7 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
             mContext = context;
         }
 
-        private void  showSignInCompleteDialogFragment(final JSONArray jArray) {
+        private void  showSignInCompleteDialogFragment(final JSONArray jsonArray) {
             final FragmentManager fragmentManager = getSupportFragmentManager();
             final FragmentTransaction ft = fragmentManager.beginTransaction();
 
@@ -60,12 +60,12 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
             }
             ft.addToBackStack(null);
 
-        	String jArrayString = jArray.toString();
+        	String jsonArrayString = jsonArray.toString();
 			try {
-				jArrayString = jArray.toString(4);
+				jsonArrayString = jsonArray.toString(4);
 			} catch (JSONException e) {
 			}
-            final DialogFragment dialogFrag = new SignInCompleteDialogFragment(jArrayString);
+            final DialogFragment dialogFrag = new SignInCompleteDialogFragment(jsonArrayString);
 
             dialogFrag.show(fragmentManager, SIGNIN_COMPLETE_TAG);
         }
@@ -106,17 +106,16 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
                             	jsonValue = uriString.substring(start);
                         	}
                         }
-                        JSONArray jArray = null;
+                        JSONArray jsonArray = null;
                         try {
-                            jArray = new JSONArray(jsonValue);
+                            jsonArray = new JSONArray(jsonValue);
                         } catch (JSONException e) {
                         }
-						if (jArray != null) {
-							showSignInCompleteDialogFragment(jArray);
+						if (jsonArray != null) {
+							showSignInCompleteDialogFragment(jsonArray);
 							CaptureStandardRegistrationFlow appState = (CaptureStandardRegistrationFlow) getApplication();
-							final EventSubject eventSubject = appState
-									.getEventSubject();
-							eventSubject.setEventData(jArray);
+							final EventSubject eventSubject = appState.getEventSubject();
+							eventSubject.setEventData(jsonArray);
 							final Thread t = new Thread(eventSubject);
 							t.start();
 						} else {
@@ -132,19 +131,19 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
         }
 
         private void dispatchEventQueue(final String eventQueueString) {
-            JSONArray jArray = null;
+            JSONArray jsonArray = null;
             try {
-                jArray = new JSONArray(eventQueueString);
+                jsonArray = new JSONArray(eventQueueString);
             } catch (JSONException e) {
             }
-            if (jArray == null) {
+            if (jsonArray == null) {
                 Log.e(LOG_TAG, "Empty event queue");
             } else {
-                final int length = jArray.length();
-                for (int i=0; i<length; ++i) {
+                final int length = jsonArray.length();
+                for (int i = 0; i < length; ++i) {
                     String argsUrl = null;
                     try {
-                        argsUrl = jArray.getString(i);
+                        argsUrl = jsonArray.getString(i);
                     } catch (JSONException e) {
                         Log.e(LOG_TAG, "Invalid Event");
                     }

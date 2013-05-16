@@ -3,9 +3,9 @@
 ### Overview
 
 The [Janrain User Registration Widget](http://developers.janrain.com/documentation/widgets/user-registration-widget/) 
-normally uses popup windows to load social provider’s login screens 
+normally uses popup windows to load social provider's login screens 
 when used in a browser. However, popups do not work well on mobile devices. Instead, the Widget is 
-configured to redirect to the social provider’s login screen, then on to the Capture UI server, and 
+configured to redirect to the social provider's login screen, then on to the Capture UI server, and 
 finally back to the original page. 
 
 For detailed information on integrating with [Android](http://www.android.com/), please see the 
@@ -112,12 +112,40 @@ TBD
 
 #### Getting the Access Token
 
-TBD
+The access token is available as a string value inside the JSON array. Here is an example JSON 
+array:
+
+[
+{
+"screen": "socialMobileRegistration",
+"transactionId": "5ndexq577nsspzee6o7fmma85t8morkgpl6uxlyv",
+"oneTime": false,
+"accessToken": "s27epv36fu2vzzj5",
+"status": "success",
+"keepMeLoggedIn": false,
+"flow": "webViewSignIn",
+"userData":
+{ "displayName": "Alfred Neuman", "email": "aleneuman@janrain.com", "uuid": "37bfe4a7-8c76-4aad-a04e-b2e7568dc66b" }
+,
+"renders": false,
+"version": "8oIhjzZcloz6EsAHPcUxwQ",
+"statusMessage": "signedIn",
+"action": "socialSignin",
+"ssoImplicitLogin": false,
+"authProfileData": {},
+"authProvider": "google"
+}
+]
 
 #### Handling JavaScript Events in the Host App
 
-TBD
-    
+In the Javascript code you 
+[bind](http://developer.android.com/guide/webapps/webview.html#UsingJavaScript) to your native 
+Android code, invoke a callback method and send it the event queue as a parameter. The event queue 
+will contain a JSON array that requires filtering. You will need to parse the JSON Array looking 
+for a URL with the janrain scheme. Once found, you will inspect the URL for the event name of 
+"onCaptureLoginSuccess" and decode the encoded JSON array passed as arguments. 
+
 ### An Example
 
 This Eclipse project, CaptureStandardRegistrationFlow, is a working example of
