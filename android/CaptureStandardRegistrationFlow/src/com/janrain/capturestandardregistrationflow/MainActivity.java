@@ -9,8 +9,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class MainActivity extends Activity implements OnClickListener {
- 
-	private ResponseHandler mResponseHandler = new ResponseHandler();
+
+    private ResponseHandler mResponseHandler = new ResponseHandler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,8 +23,8 @@ public class MainActivity extends Activity implements OnClickListener {
         btnSignIn.setOnClickListener(this);
         btnEditProfile.setOnClickListener(this);
 
-		final CaptureStandardRegistrationFlow appState = (CaptureStandardRegistrationFlow) getApplication();
-		final EventSubject eventSubject = appState.getEventSubject();
+        final CaptureStandardRegistrationFlow appState = (CaptureStandardRegistrationFlow) getApplication();
+        final EventSubject eventSubject = appState.getEventSubject();
         eventSubject.addObserver(mResponseHandler);
     }
 
@@ -57,4 +57,3 @@ public class MainActivity extends Activity implements OnClickListener {
         }
     }
 }
-

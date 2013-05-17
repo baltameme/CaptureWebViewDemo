@@ -21,7 +21,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class SignInActivity extends FragmentActivity implements SignInCompleteDialogFragment.NoticeDialogListener {
+public class SignInActivity extends FragmentActivity implements
+SignInCompleteDialogFragment.NoticeDialogListener {
     private static final String ANDROID_NS = "demo";
     private static final String SCHEME_JANRAIN = "janrain";
 
@@ -41,7 +42,7 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
 
     public class WebAppInterface {
         private static final String SIGNIN_COMPLETE_TAG = "signin complete";
-		private static final String LOG_TAG = "WebAppInterface";
+        private static final String LOG_TAG = "WebAppInterface";
 
         private Context mContext;
 
@@ -50,22 +51,24 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
             mContext = context;
         }
 
-        private void  showSignInCompleteDialogFragment(final JSONArray jsonArray) {
+        private void showSignInCompleteDialogFragment(final JSONArray jsonArray) {
             final FragmentManager fragmentManager = getSupportFragmentManager();
             final FragmentTransaction ft = fragmentManager.beginTransaction();
 
-            final Fragment prev = fragmentManager.findFragmentByTag(SIGNIN_COMPLETE_TAG);
+            final Fragment prev = fragmentManager
+                    .findFragmentByTag(SIGNIN_COMPLETE_TAG);
             if (prev != null) {
                 ft.remove(prev);
             }
             ft.addToBackStack(null);
 
-        	String jsonArrayString = jsonArray.toString();
-			try {
-				jsonArrayString = jsonArray.toString(4);
-			} catch (JSONException e) {
-			}
-            final DialogFragment dialogFrag = new SignInCompleteDialogFragment(jsonArrayString);
+            String jsonArrayString = jsonArray.toString();
+            try {
+                jsonArrayString = jsonArray.toString(4);
+            } catch (JSONException e) {
+            }
+            final DialogFragment dialogFrag = new SignInCompleteDialogFragment(
+                    jsonArrayString);
 
             dialogFrag.show(fragmentManager, SIGNIN_COMPLETE_TAG);
         }
@@ -80,7 +83,7 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
                 final int schemeJanrainLength = SCHEME_JANRAIN.length();
                 final char colon = argsUrl.charAt(schemeJanrainLength);
                 if (colon == ':') {
-                    final int start = schemeJanrainLength+1;
+                    final int start = schemeJanrainLength + 1;
                     final int indexQuestionMark = argsUrl.indexOf('?', start);
                     if (indexQuestionMark > start) {
                         eventName = argsUrl.substring(start, indexQuestionMark);
@@ -88,7 +91,7 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
                 }
 
                 if (TextUtils.isEmpty(eventName)) {
-                        Log.w(LOG_TAG, "Empty Event");
+                    Log.w(LOG_TAG, "Empty Event");
                 } else {
                     final String ON_CAPTURE_LOGIN_SUCCESS = "onCaptureLoginSuccess";
 
@@ -100,27 +103,28 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
                         if (uriString != null) {
                             final String ARGUMENTS = "arguments" + "=";
 
-                        	final int index = uriString.indexOf(ARGUMENTS);
-                        	if (index >= 0) {
-                            	final int start = index + ARGUMENTS.length();
-                            	jsonValue = uriString.substring(start);
-                        	}
+                            final int index = uriString.indexOf(ARGUMENTS);
+                            if (index >= 0) {
+                                final int start = index + ARGUMENTS.length();
+                                jsonValue = uriString.substring(start);
+                            }
                         }
                         JSONArray jsonArray = null;
                         try {
                             jsonArray = new JSONArray(jsonValue);
                         } catch (JSONException e) {
                         }
-						if (jsonArray != null) {
-							showSignInCompleteDialogFragment(jsonArray);
-							CaptureStandardRegistrationFlow appState = (CaptureStandardRegistrationFlow) getApplication();
-							final EventSubject eventSubject = appState.getEventSubject();
-							eventSubject.setEventData(jsonArray);
-							final Thread t = new Thread(eventSubject);
-							t.start();
-						} else {
-							Log.e(LOG_TAG, "Invalid JSON Array format");
-						}
+                        if (jsonArray != null) {
+                            showSignInCompleteDialogFragment(jsonArray);
+                            CaptureStandardRegistrationFlow appState = (CaptureStandardRegistrationFlow) getApplication();
+                            final EventSubject eventSubject = appState
+                                    .getEventSubject();
+                            eventSubject.setEventData(jsonArray);
+                            final Thread t = new Thread(eventSubject);
+                            t.start();
+                        } else {
+                            Log.e(LOG_TAG, "Invalid JSON Array format");
+                        }
                     } else {
                         Log.i(LOG_TAG, "Ignored Event: " + eventName);
                     }
@@ -157,11 +161,10 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
 
     final public class JavascriptBridgeInterface {
         final static String JAVASCRIPT = "javascript:"
-            + "(function() {"
-            + "if (typeof createJanrainBridge.eventQueue === 'undefined') return \"undefined queue\";"
-            + "var t = JSON.stringify(createJanrainBridge.eventQueue);"
-            + "window." + ANDROID_NS + ".bridgeCallback(t);"
-            + "})();";
+                + "(function() {"
+                + "if (typeof createJanrainBridge.eventQueue === 'undefined') return \"undefined queue\";"
+                + "var t = JSON.stringify(createJanrainBridge.eventQueue);"
+                + "window." + ANDROID_NS + ".bridgeCallback(t);" + "})();";
 
         Context mContext = null;
 
@@ -171,6 +174,7 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
 
         public void runJavascript() {
             mHandler.post(new Runnable() {
+                @Override
                 public void run() {
                     mWebView.loadUrl(JAVASCRIPT);
                 }
@@ -179,33 +183,39 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
 
         @JavascriptInterface
         public void bridgeCallback(final String eventQueueString) {
-            final WebAppInterface webAppInterface = new WebAppInterface(mContext);
+            final WebAppInterface webAppInterface = new WebAppInterface(
+                    mContext);
             webAppInterface.dispatchEventQueue(eventQueueString);
         }
     }
 
     public class MyWebViewClient extends WebViewClient {
         private static final String LOG_TAG = "MyWebViewClient";
-        
+
         private JavascriptBridgeInterface mJavascriptBridgeInterface;
 
         /**
-        * @param mJavascriptBridgeInterface
-        */
-        public MyWebViewClient(JavascriptBridgeInterface javascriptBridgeInterface) {
+         * @param mJavascriptBridgeInterface
+         */
+        public MyWebViewClient(
+                JavascriptBridgeInterface javascriptBridgeInterface) {
             super();
             mJavascriptBridgeInterface = javascriptBridgeInterface;
         }
 
-        /* (non-Javadoc)
-         * @see android.webkit.WebViewClient#shouldOverrideUrlLoading(android.webkit.WebView, java.lang.String)
+        /*
+         * (non-Javadoc)
+         * 
+         * @see
+         * android.webkit.WebViewClient#shouldOverrideUrlLoading(android.webkit
+         * .WebView, java.lang.String)
          */
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, String url) {
             boolean result = super.shouldOverrideUrlLoading(webView, url);
 
             if (isSchemeJanrain(url)) {
-                mJavascriptBridgeInterface.runJavascript();                
+                mJavascriptBridgeInterface.runJavascript();
             }
 
             return result;
@@ -213,16 +223,17 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
     }
 
     /**
-     * Provides a hook for calling "alert" from Javascript. Useful for
-     * debugging your Javascript.
+     * Provides a hook for calling "alert" from Javascript. Useful for debugging
+     * your Javascript.
      */
     final class MyWebChromeClient extends WebChromeClient {
-//        @Override
-//        public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
-//            Log.d(LOG_TAG, message);
-//            result.confirm();
-//            return true;
-//        }
+        // @Override
+        // public boolean onJsAlert(WebView view, String url, String message,
+        // JsResult result) {
+        // Log.d(LOG_TAG, message);
+        // result.confirm();
+        // return true;
+        // }
     }
 
     private WebView mWebView;
@@ -243,9 +254,11 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
         webSettings.setSupportZoom(false);
 
         final String userAgent = webSettings.getUserAgentString();
-        webSettings.setUserAgentString("janrainNativeAppBridgeEnabled" + userAgent);
+        webSettings.setUserAgentString("janrainNativeAppBridgeEnabled"
+                + userAgent);
 
-        JavascriptBridgeInterface javascriptBridgeInterface = new JavascriptBridgeInterface(this);
+        JavascriptBridgeInterface javascriptBridgeInterface = new JavascriptBridgeInterface(
+                this);
         mWebView.addJavascriptInterface(javascriptBridgeInterface, ANDROID_NS);
 
         mWebView.setWebChromeClient(new MyWebChromeClient());
@@ -253,8 +266,8 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
 
         final String url = getString(R.string.url_index);
         mWebView.loadUrl(url);
-        //mWebView.loadUrl("file:///android_asset/demo.html");
-        //javascriptBridgeInterface.runJavascript();
+        // mWebView.loadUrl("file:///android_asset/demo.html");
+        // javascriptBridgeInterface.runJavascript();
     }
 
     @Override
@@ -264,8 +277,8 @@ public class SignInActivity extends FragmentActivity implements SignInCompleteDi
         return true;
     }
 
-	@Override
-	public void onDialogDismiss(DialogFragment dialogFragment) {
-		finish();
-	}
+    @Override
+    public void onDialogDismiss(DialogFragment dialogFragment) {
+        finish();
+    }
 }
