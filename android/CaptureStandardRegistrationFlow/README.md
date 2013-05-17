@@ -139,12 +139,15 @@ array:
 
 #### Handling JavaScript Events in the Host App
 
-In the Javascript code you 
+The Javascript code you write will 
 [bind](http://developer.android.com/guide/webapps/webview.html#UsingJavaScript) to your native 
 Android code, invoke a callback method and send it the event queue as a parameter. The event queue 
-will contain a JSON array that requires filtering. You will need to parse the JSON Array looking 
-for a URL with the janrain scheme. Once found, you will inspect the URL for the event name of 
-"onCaptureLoginSuccess" and decode the encoded JSON array passed as arguments. 
+will contain a JSON array that requires further filtering. You will to parse the JSON Array looking 
+for a URL element with the janrain scheme. Once found, you will inspect the URL for the event name of 
+"onCaptureLoginSuccess" and decode the encoded JSON array passed as "arguments". The format of the
+URL will be as follows:
+
+janrain:onCaptureLoginSuccess?arguments=URL%20ENCODED%20JSON%20ARRAY%20HERE
 
 ### An Example
 
