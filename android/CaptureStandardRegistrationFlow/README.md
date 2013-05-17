@@ -24,7 +24,7 @@ thereby leveraging the abilities of the widget to handle your user registration.
 [INTERNET permission](http://developer.android.com/reference/android/Manifest.permission.html#INTERNET) 
 for the WebView to function. You may find it easier to inject JavaScript directly from your 
 native code by using the WebView's 
-[addJavascriptInterface](http://developer.android.com/reference/android/webkit/WebView.html#addJavascriptInterface%28java.lang.Object,%28java.lang.String%29) 
+[addJavascriptInterface](http://developer.android.com/reference/android/webkit/WebView.html#addJavascriptInterface%28java.lang.Object, java.lang.String%29) 
 method. 
 
 ### Example HTML Files
