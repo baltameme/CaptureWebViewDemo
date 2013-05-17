@@ -120,7 +120,7 @@ array:
 "screen": "socialMobileRegistration",
 "transactionId": "5ndexq577nsspzee6o7fmma85t8morkgpl6uxlyv",
 "oneTime": false,
-"accessToken": "s27epv36fu2vzzj5",
+<b>"accessToken": "s27epv36fu2vzzj5"</b>,
 "status": "success",
 "keepMeLoggedIn": false,
 "flow": "webViewSignIn",
