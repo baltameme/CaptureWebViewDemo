@@ -24,7 +24,7 @@ thereby leveraging the abilities of the widget to handle your user registration.
 [INTERNET permission](http://developer.android.com/reference/android/Manifest.permission.html#INTERNET) 
 for the WebView to function. You may find it easier to inject JavaScript directly from your 
 native code by using the WebView's 
-[addJavascriptInterface](http://developer.android.com/reference/android/webkit/WebView.html#addJavascriptInterface(java.lang.Object,%20java.lang.String)) 
+[addJavascriptInterface](http://developer.android.com/reference/android/webkit/WebView.html#addJavascriptInterface%28java.lang.Object,%28java.lang.String%29) 
 method. 
 
 ### Example HTML Files
@@ -86,9 +86,9 @@ Specifies the page to be redirected to after signing in.
 
 ### Interacting with the Widget from the Android Host App
 
-The WebView [setWebViewClient](http://developer.android.com/reference/android/webkit/WebView.html#setWebViewClient(android.webkit.WebViewClient)) 
+The WebView [setWebViewClient](http://developer.android.com/reference/android/webkit/WebView.html#setWebViewClient%28android.webkit.WebViewClient%29) 
 method is used to take over control when a new url is about to be loaded. Using the 
-[shouldOverrideUrlLoading](http://developer.android.com/reference/android/webkit/WebViewClient.html#shouldOverrideUrlLoading(android.webkit.WebView, java.lang.String)) 
+[shouldOverrideUrlLoading](http://developer.android.com/reference/android/webkit/WebViewClient.html#shouldOverrideUrlLoading%28android.webkit.WebView, java.lang.String%29) 
 method, inspect and detect the for the janrain [scheme](http://en.wikipedia.org/wiki/URI_scheme). 
 Whenever the janrain scheme is detected, the format for the URL should be as follows:
 
