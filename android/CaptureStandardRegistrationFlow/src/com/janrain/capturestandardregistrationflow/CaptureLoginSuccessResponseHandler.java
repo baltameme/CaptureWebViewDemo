@@ -13,8 +13,12 @@ import org.json.JSONObject;
 /**
  * @author mitch
  * 
+ * Observer of Capture login success. Responds by parsing data returned from 
+ * onCaptureLoginSuccess. 
+ * 
+ * @see http://en.wikipedia.org/wiki/Observer_pattern
  */
-public class ResponseHandler implements Observer {
+public class CaptureLoginSuccessResponseHandler implements Observer {
 
     private String mAccessToken;
 

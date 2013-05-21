@@ -37,6 +37,10 @@
         <activity
             android:name="com.janrain.capturestandardregistrationflow.EditProfileActivity"
             android:label="@string/edit_profile" >
+            android:parentActivityName="com.janrain.capturestandardregistrationflow.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.janrain.capturestandardregistrationflow.MainActivity" />
         </activity>
     </application>
 

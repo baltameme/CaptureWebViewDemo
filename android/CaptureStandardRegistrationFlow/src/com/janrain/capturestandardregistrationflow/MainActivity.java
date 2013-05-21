@@ -10,7 +10,7 @@ import android.widget.Button;
 
 public class MainActivity extends Activity implements OnClickListener {
 
-    private ResponseHandler mResponseHandler = new ResponseHandler();
+    private CaptureLoginSuccessResponseHandler mResponseHandler = new CaptureLoginSuccessResponseHandler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,8 +24,8 @@ public class MainActivity extends Activity implements OnClickListener {
         btnEditProfile.setOnClickListener(this);
 
         final CaptureStandardRegistrationFlow appState = (CaptureStandardRegistrationFlow) getApplication();
-        final EventSubject eventSubject = appState.getEventSubject();
-        eventSubject.addObserver(mResponseHandler);
+        final CaptureLoginSuccessEventSubject captureLoginSuccessSubject = appState.getCaptureLoginSuccessEventSubject();
+        captureLoginSuccessSubject.addObserver(mResponseHandler);
     }
 
     @Override

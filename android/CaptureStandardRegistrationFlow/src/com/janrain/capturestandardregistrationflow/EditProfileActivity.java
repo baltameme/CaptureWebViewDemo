@@ -65,7 +65,7 @@ public class EditProfileActivity extends Activity {
         webSettings.setUserAgentString("janrainNativeAppBridgeEnabled"
                 + userAgent);
 
-        JavascriptBridgeInterface javascriptBridgeInterface = new JavascriptBridgeInterface();
+        final JavascriptBridgeInterface javascriptBridgeInterface = new JavascriptBridgeInterface();
         mWebView.addJavascriptInterface(javascriptBridgeInterface, ANDROID_NS);
 
         mWebView.setWebChromeClient(new MyWebChromeClient());

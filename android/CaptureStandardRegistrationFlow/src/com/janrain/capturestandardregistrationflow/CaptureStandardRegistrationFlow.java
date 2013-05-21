@@ -4,17 +4,17 @@ import android.app.Application;
 
 public class CaptureStandardRegistrationFlow extends Application {
 
-    private EventSubject mEventSubject = null;
+    private CaptureLoginSuccessEventSubject mCaptureLoginSuccessEventSubject = null;
 
     public CaptureStandardRegistrationFlow() {
         super();
-        mEventSubject = new EventSubject();
+        mCaptureLoginSuccessEventSubject = new CaptureLoginSuccessEventSubject();
     }
 
     /**
      * @return the eventSubject
      */
-    public EventSubject getEventSubject() {
-        return mEventSubject;
+    public CaptureLoginSuccessEventSubject getCaptureLoginSuccessEventSubject() {
+        return mCaptureLoginSuccessEventSubject;
     }
 }

@@ -40,15 +40,44 @@ SignInCompleteDialogFragment.NoticeDialogListener {
         return result;
     }
 
+    /*
+     * (non-Javadoc)
+     * 
+     * WebAppInterface class binds WebView to Javascript. 
+     * For futher details, 
+     * 
+     * @see
+     * http://developer.android.com/guide/webapps/webview.html#BindingJavaScript
+     */
     public class WebAppInterface {
         private static final String SIGNIN_COMPLETE_TAG = "signin complete";
         private static final String LOG_TAG = "WebAppInterface";
 
-        private Context mContext;
+        final static String JAVASCRIPT = "javascript:"
+                + "(function() {"
+                + "if (typeof createJanrainBridge.eventQueue === 'undefined') return \"undefined queue\";"
+                + "var t = JSON.stringify(createJanrainBridge.eventQueue);"
+                + "window." + ANDROID_NS + ".bridgeCallback(t);" + "})();";
+
+        private Context mContext = null;
 
         /** Instantiate the interface and set the context */
-        WebAppInterface(Context context) {
+        public WebAppInterface(Context context) {
             mContext = context;
+        }
+
+        public void runJavascript() {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mWebView.loadUrl(JAVASCRIPT);
+                }
+            });
+        }
+
+        @JavascriptInterface
+        public void bridgeCallback(final String eventQueueString) {
+            dispatchEventQueue(eventQueueString);
         }
 
         private void showSignInCompleteDialogFragment(final JSONArray jsonArray) {
@@ -116,11 +145,12 @@ SignInCompleteDialogFragment.NoticeDialogListener {
                         }
                         if (jsonArray != null) {
                             showSignInCompleteDialogFragment(jsonArray);
-                            CaptureStandardRegistrationFlow appState = (CaptureStandardRegistrationFlow) getApplication();
-                            final EventSubject eventSubject = appState
-                                    .getEventSubject();
-                            eventSubject.setEventData(jsonArray);
-                            final Thread t = new Thread(eventSubject);
+                            CaptureStandardRegistrationFlow appState = 
+                                    (CaptureStandardRegistrationFlow) getApplication();
+                            final CaptureLoginSuccessEventSubject captureLoginSuccessEventSubject = 
+                                    appState.getCaptureLoginSuccessEventSubject();
+                            captureLoginSuccessEventSubject.setEventData(jsonArray);
+                            final Thread t = new Thread(captureLoginSuccessEventSubject);
                             t.start();
                         } else {
                             Log.e(LOG_TAG, "Invalid JSON Array format");
@@ -159,48 +189,18 @@ SignInCompleteDialogFragment.NoticeDialogListener {
         }
     }
 
-    final public class JavascriptBridgeInterface {
-        final static String JAVASCRIPT = "javascript:"
-                + "(function() {"
-                + "if (typeof createJanrainBridge.eventQueue === 'undefined') return \"undefined queue\";"
-                + "var t = JSON.stringify(createJanrainBridge.eventQueue);"
-                + "window." + ANDROID_NS + ".bridgeCallback(t);" + "})();";
-
-        Context mContext = null;
-
-        public JavascriptBridgeInterface(final Context context) {
-            mContext = context;
-        }
-
-        public void runJavascript() {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    mWebView.loadUrl(JAVASCRIPT);
-                }
-            });
-        }
-
-        @JavascriptInterface
-        public void bridgeCallback(final String eventQueueString) {
-            final WebAppInterface webAppInterface = new WebAppInterface(
-                    mContext);
-            webAppInterface.dispatchEventQueue(eventQueueString);
-        }
-    }
-
     public class MyWebViewClient extends WebViewClient {
         private static final String LOG_TAG = "MyWebViewClient";
 
-        private JavascriptBridgeInterface mJavascriptBridgeInterface;
+        private WebAppInterface mWebAppJavascriptBridgeInterface;
 
         /**
          * @param mJavascriptBridgeInterface
          */
         public MyWebViewClient(
-                JavascriptBridgeInterface javascriptBridgeInterface) {
+                WebAppInterface webAppJavascriptBridgeInterface) {
             super();
-            mJavascriptBridgeInterface = javascriptBridgeInterface;
+            mWebAppJavascriptBridgeInterface = webAppJavascriptBridgeInterface;
         }
 
         /*
@@ -215,7 +215,7 @@ SignInCompleteDialogFragment.NoticeDialogListener {
             boolean result = super.shouldOverrideUrlLoading(webView, url);
 
             if (isSchemeJanrain(url)) {
-                mJavascriptBridgeInterface.runJavascript();
+                mWebAppJavascriptBridgeInterface.runJavascript();
             }
 
             return result;
@@ -254,15 +254,13 @@ SignInCompleteDialogFragment.NoticeDialogListener {
         webSettings.setSupportZoom(false);
 
         final String userAgent = webSettings.getUserAgentString();
-        webSettings.setUserAgentString("janrainNativeAppBridgeEnabled"
-                + userAgent);
+        webSettings.setUserAgentString("janrainNativeAppBridgeEnabled" + userAgent);
 
-        JavascriptBridgeInterface javascriptBridgeInterface = new JavascriptBridgeInterface(
-                this);
-        mWebView.addJavascriptInterface(javascriptBridgeInterface, ANDROID_NS);
+        WebAppInterface webAppJavascriptBridgeInterface = new WebAppInterface(this);
+        mWebView.addJavascriptInterface(webAppJavascriptBridgeInterface, ANDROID_NS);
 
         mWebView.setWebChromeClient(new MyWebChromeClient());
-        mWebView.setWebViewClient(new MyWebViewClient(javascriptBridgeInterface));
+        mWebView.setWebViewClient(new MyWebViewClient(webAppJavascriptBridgeInterface));
 
         final String url = getString(R.string.url_index);
         mWebView.loadUrl(url);

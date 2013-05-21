@@ -7,7 +7,7 @@
     <string name="sign_in_intro">Demonstrates Janrain Sign-In.</string>
     <string name="edit_profile">Edit Profile</string>
     <string name="edit_profile_intro">Demonstrates Janrain Edit Profile</string>
-	<string name="signin_complete">Sign-in Complete</string>
-	<string name="dismiss">Dismiss</string>
+    <string name="signin_complete">Sign-in Complete</string>
+    <string name="dismiss">Dismiss</string>
 
 </resources>
