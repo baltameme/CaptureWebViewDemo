@@ -81,5 +81,13 @@ finishes the password change in the Capture database.
 Once the password change has finished, your JavaScript callback 
 (referenced by the `callback` parameter used to load the password reset
 iframe) is invoked. Your callback (defined in `password_reset.php`)
-opens your iOS app.
+opens your iOS app. 
+
+To open your iOS app register a custom URL scheme (e.g. 
+myapp:// ) and open a URL with that scheme. iOS will open your your app
+and fire the -application:handleOpenURL: UIApplicationDelegate message.
+
+See Apple's custom app URL schema documentation for details:
+http://developer.apple.com/library/ios/#documentation/iPhone/Conceptual/iPhoneOSProgrammingGuide/AdvancedAppTricks/AdvancedAppTricks.html
+
 
