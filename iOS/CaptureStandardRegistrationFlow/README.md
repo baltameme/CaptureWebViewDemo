@@ -63,8 +63,6 @@ Configures the base URL of your Capture server instance
 Unused in the redirect flow but must be set to an Engage whitelisted
 domain for proper operation.
 
-Specifies the page to be redirected to after signing in.
-
 ### Interacting with the Widget from the iOS Host App
 
 The UIWebView message `+(NSString *)stringByEvaluatingJavaScriptFromString:(NSString *) jsString`
