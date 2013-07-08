@@ -22,6 +22,7 @@ public class CaptureWebViewPoc extends Activity {
 
     // This is the base URL for your Capture domain
     private static final String CAPTURE_BASE_URL = "https://webview-poc.dev.janraincapture.com";
+    public static final String CLIENT_ID = "zc7tx83fqy68mper69mxbt5dfvd7c2jh";
     private WebView mWebView;
     private Button mSigninButton;
     private Button mRegisterButton;
@@ -46,7 +47,7 @@ public class CaptureWebViewPoc extends Activity {
       */
     private final String CAPTURE_SIGNIN_URL = CAPTURE_BASE_URL + "/oauth/signin_mobile?" +
             "redirect_uri=" + mSentinelUrl +
-            "&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
+            "&client_id=" + CLIENT_ID +
             "&response_type=token";
 
     /* This URL loads the profile editing page */
@@ -54,7 +55,7 @@ public class CaptureWebViewPoc extends Activity {
             "/oauth/profile_mobile_general?" +
             "access_token=%s" +
             "&callback=$m.members.HandleProfileSave" +
-            "&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
+            "&client_id=" + CLIENT_ID +
             "&xd_receiver=" +
             "&flags=stay_in_window";
 
@@ -63,14 +64,14 @@ public class CaptureWebViewPoc extends Activity {
             "/oauth/profile_mobile_networks?" +
             "access_token=%s" +
             "&callback=$m.members.HandleProfileSave" +
-            "&client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
+            "&client_id=" + CLIENT_ID +
             "&xd_receiver=" +
             "&flags=stay_in_window";
 
     /* This URL loads the username and password registration page */
     private final String CAPTURE_LEGACY_REGISTER_URL = CAPTURE_BASE_URL +
             "/oauth/legacy_register_mobile?" +
-            "client_id=zc7tx83fqy68mper69mxbt5dfvd7c2jh" +
+            "client_id=" + CLIENT_ID +
             "&xd_receiver=" +
             "&flags=stay_in_window" +
             "&response_type=token" +
