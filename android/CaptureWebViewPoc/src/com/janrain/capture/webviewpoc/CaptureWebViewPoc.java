@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -76,7 +77,6 @@ public class CaptureWebViewPoc extends Activity {
             "&callback=" +
             "&redirect_uri=" + mSentinelUrl;
 
-
     /**
      * This is glue code to set up demo's chrome
      */
@@ -96,6 +96,7 @@ public class CaptureWebViewPoc extends Activity {
         mWebView.setWebViewClient(mWebViewClient); // watches URLs as they load
         mWebView.getSettings().setJavaScriptEnabled(true); // may not be necessary, should be on by default
         mWebView.getSettings().setSavePassword(false);
+        CookieSyncManager.createInstance(this);
         CookieManager.getInstance().removeAllCookie(); // Nuke any IDP cookies
 
         mRegisterButton = (Button) findViewById(R.id.register_button);
