@@ -22,7 +22,7 @@ public class CaptureWebViewPoc extends Activity {
 
     // This is the base URL for your Capture domain
     private static final String CAPTURE_BASE_URL = "https://webview-poc.dev.janraincapture.com";
-    public static final String CLIENT_ID = "zc7tx83fqy68mper69mxbt5dfvd7c2jh";
+    public static final String CLIENT_ID = "3s62zbxe3ku9dpzcfqxdp65g6xt4kxdr";
     private WebView mWebView;
     private Button mSigninButton;
     private Button mRegisterButton;
