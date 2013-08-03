@@ -1,37 +1,60 @@
-## Embedding Widget in a Web View
+# Embedding the Capture Web Widget in a WebView
 
-### Overview
+## Intro
 
-The [Janrain User Registration Widget](http://developers.janrain.com/documentation/widgets/user-registration-widget/) 
-normally uses popup windows to load social provider's login screens 
-when used in a browser. However, popups do not work well on mobile devices. Instead, the Widget is 
-configured to redirect to the social provider's login screen, then on to the Capture UI server, and 
-finally back to the original page. 
+The User Registration (Capture) web widget can be run inside of a WebView in an Android app. From there you can use it
+to provide user sign-in and registration. The Capture sign-in session can be bridged to the hosting native Android app
+which can use it with the Capture `entity` API to perform record updates. (The entity API, when authentication with an
+end-user session access token, can update a limited set of attributes.)
 
-For detailed information on integrating with [Android](http://www.android.com/), please see the 
-[JUMP for Android](http://developers.janrain.com/documentation/mobile-libraries/jump-for-android/) 
-documentation. 
+To embed the Capture web widget in a WebView you will need to create a web page hosting the widget and direct the
+WebView to load the page's URL. (Local filesystem hosted pages will not work, i.e. you cannot use a page compiled into
+the app.)
 
-### How it Works
+Once the widget is hosted in a page, it will need to be configured for compatibility of operation with the WebView.
+This configuration will include disabling the pop-up window flow, and optionally configuring the widget to use a small-
+screen optimized registration-flow.
 
-Your Android app embeds a 
-[WebView](http://developer.android.com/reference/android/webkit/WebView.html) in a native layout 
-and [binds JavaScript](http://developer.android.com/guide/webapps/webview.html#UsingJavaScript) 
-code to your native Android code. The WebView will contain the 
-[Janrain User Registration Widget](http://developers.janrain.com/documentation/widgets/user-registration-widget/), 
-thereby leveraging the abilities of the widget to handle your user registration. It is important to remember that your 
-[AndroidManifest.xml](http://developer.android.com/guide/topics/manifest/manifest-intro.html) must specify the 
-[INTERNET permission](http://developer.android.com/reference/android/Manifest.permission.html#INTERNET) 
-for the WebView to function. You may find it easier to inject JavaScript directly from your 
-native code by using the WebView's 
-[addJavascriptInterface](http://developer.android.com/reference/android/webkit/WebView.html#addJavascriptInterface%28java.lang.Object, java.lang.String%29) 
-method. 
+## Principal of Operation
 
-### Example HTML Files
+At its most fundamental embedding the User Registration widget in a WebView works because information can be exchanged
+between the WebView and the native Android host app. This information exchange can be accomplished in different ways:
 
-* [Example Index Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index.html)
-* [Example Page With All Screens Using One FLow](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index-oneflow.html)
-* [Example Edit Profile Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/edit-profile.html)
+1. Using the WebView Java to JavaScript binding API
+
+   http://developer.android.com/guide/webapps/webview.html#BindingJavaScript
+
+   This technique allows you to register a Java object of your definition with the WebView, and Javascript running in
+   the WebView will be able to call methods available on the Java object.
+
+2. Injecting information by loading `javascript:` scheme URLs in the WebView
+
+   If you call WebView#loadUrl with a URL with the `javascript` scheme the WebView will evaluate the path of the URL
+   as JavaScript. (So, e.g., `javascript:alert("These Snozzberries taste like Snozzberries!");` will display a
+   JavaScript alert dialog.) This allows you to inject information into the WebView from the host app, but doesn't
+   enable the extraction of information from the WebView into the host app. Which brings us to our final technique:
+
+3. Overriding WebViewClient#shouldOverrideUrlLoading
+
+   By subclassing WebViewClient (and configuring the WebView to use the client with WebView#setWebViewClient) you can
+
+## Reference Implementation
+
+### Sample Android WebView
+
+### Sample Web Pages
+
+* [Sample Index Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index.html)
+* [Sample Page With All Screens Using One FLow](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/index-oneflow.html)
+* [Sample Edit Profile Page](https://raw.github.com/janrain/CaptureWebViewDemo/gh-pages/edit-profile.html)
+
+## Implementation.
+
+1. Create a WebView
+2. Create a page, hosted on a web server, to be loaded in the WebView
+2.1 Embed the User Registration widget in the page, configure it as necessary
+3. Load the page's URL in the WebView
+4. Enable a bridge to transfer information between the host application and the JavaScript runtime in the WebView.
 
 ### Starting the Widget
 
@@ -137,7 +160,7 @@ array:
 }
 ]
 
-#### Handling JavaScript Events in the Host App
+### Handling JavaScript Events in the Host App
 
 The Javascript code you write will 
 [bind](http://developer.android.com/guide/webapps/webview.html#UsingJavaScript) to your native 
@@ -149,7 +172,7 @@ URL will be as follows:
 
 janrain:onCaptureLoginSuccess?arguments=URL%20ENCODED%20JSON%20ARRAY%20HERE
 
-### An Example
+## An Example
 
 This Eclipse project, CaptureStandardRegistrationFlow, is a working example of
 running the Capture user registration widget in a WebView. It loads static

@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <string name="url_index">http://janrain.github.com/CaptureWebViewDemo/index.html</string>
-    <string name="url_edit_profile">http://janrain.github.com/CaptureWebViewDemo/edit-profile.html</string>
-
-</resources>

@@ -1,5 +1,41 @@
-package com.janrain.capturestandardregistrationflow;
+/*
+ *
+ *  *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *  *  Copyright (c) 2013, Janrain, Inc.
+ *  *
+ *  *  All rights reserved.
+ *  *
+ *  *  Redistribution and use in source and binary forms, with or without modification,
+ *  *  are permitted provided that the following conditions are met:
+ *  *
+ *  *  * Redistributions of source code must retain the above copyright notice, this
+ *  *    list of conditions and the following disclaimer.
+ *  *  * Redistributions in binary form must reproduce the above copyright notice,
+ *  *    this list of conditions and the following disclaimer in the documentation and/or
+ *  *    other materials provided with the distribution.
+ *  *  * Neither the name of the Janrain, Inc. nor the names of its
+ *  *    contributors may be used to endorse or promote products derived from this
+ *  *    software without specific prior written permission.
+ *  *
+ *  *
+ *  *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ *  *  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *  *  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ *  *  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ *  *  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ *  *  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+ *  *  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ *  *  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *  *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *  *  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *
+ */
+package com.janrain.example.capturestandardregistrationflow;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -7,26 +43,21 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Menu;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class SignInActivity extends FragmentActivity implements
-SignInCompleteDialogFragment.NoticeDialogListener {
+public class SignInActivity extends Activity {
     private static final String ANDROID_NS = "demo";
     private static final String SCHEME_JANRAIN = "janrain";
 
-    private static final boolean isSchemeJanrain(final String url) {
+    private WebView mWebView;
+    private Handler mHandler = new Handler();
+
+    private static boolean isSchemeJanrain(final String url) {
         boolean result = false;
         if (!TextUtils.isEmpty(url)) {
             final Uri uri = Uri.parse(url);
@@ -40,14 +71,9 @@ SignInCompleteDialogFragment.NoticeDialogListener {
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * WebAppInterface class binds WebView to Javascript. 
-     * For futher details, 
-     * 
-     * @see
-     * http://developer.android.com/guide/webapps/webview.html#BindingJavaScript
+    /**
+     * WebAppInterface class is used to Java <-> JavaScript binding for the WebView
+     * For more details, @see http://developer.android.com/guide/webapps/webview.html#BindingJavaScript
      */
     public class WebAppInterface {
         private static final String SIGNIN_COMPLETE_TAG = "signin complete";
@@ -55,9 +81,10 @@ SignInCompleteDialogFragment.NoticeDialogListener {
 
         final static String JAVASCRIPT = "javascript:"
                 + "(function() {"
-                + "if (typeof createJanrainBridge.eventQueue === 'undefined') return \"undefined queue\";"
-                + "var t = JSON.stringify(createJanrainBridge.eventQueue);"
-                + "window." + ANDROID_NS + ".bridgeCallback(t);" + "})();";
+                + "  if (typeof createJanrainBridge.eventQueue === 'undefined') return \"undefined queue\";"
+                + "  var t = JSON.stringify(createJanrainBridge.eventQueue);"
+                + "  window." + ANDROID_NS + ".bridgeCallback(t);"
+                + "})();";
 
         private Context mContext = null;
 
@@ -68,7 +95,6 @@ SignInCompleteDialogFragment.NoticeDialogListener {
 
         public void runJavascript() {
             mHandler.post(new Runnable() {
-                @Override
                 public void run() {
                     mWebView.loadUrl(JAVASCRIPT);
                 }
@@ -81,25 +107,21 @@ SignInCompleteDialogFragment.NoticeDialogListener {
         }
 
         private void showSignInCompleteDialogFragment(final JSONArray jsonArray) {
-            final FragmentManager fragmentManager = getSupportFragmentManager();
-            final FragmentTransaction ft = fragmentManager.beginTransaction();
-
-            final Fragment prev = fragmentManager
-                    .findFragmentByTag(SIGNIN_COMPLETE_TAG);
-            if (prev != null) {
-                ft.remove(prev);
-            }
-            ft.addToBackStack(null);
-
             String jsonArrayString = jsonArray.toString();
             try {
                 jsonArrayString = jsonArray.toString(4);
             } catch (JSONException e) {
             }
-            final DialogFragment dialogFrag = new SignInCompleteDialogFragment(
-                    jsonArrayString);
 
-            dialogFrag.show(fragmentManager, SIGNIN_COMPLETE_TAG);
+            AlertDialog.Builder adb = new AlertDialog.Builder(SignInActivity.this);
+            adb.setTitle("Sign-In Complete");
+            adb.setMessage(jsonArrayString);
+            adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            adb.show();
         }
 
         private void parseAndDispatchEventUrl(final String argsUrl) {
@@ -145,8 +167,8 @@ SignInCompleteDialogFragment.NoticeDialogListener {
                         }
                         if (jsonArray != null) {
                             showSignInCompleteDialogFragment(jsonArray);
-                            CaptureStandardRegistrationFlow appState = 
-                                    (CaptureStandardRegistrationFlow) getApplication();
+                            CaptureStandardRegistrationFlowDemo appState =
+                                    (CaptureStandardRegistrationFlowDemo) getApplication();
                             final CaptureLoginSuccessEventSubject captureLoginSuccessEventSubject = 
                                     appState.getCaptureLoginSuccessEventSubject();
                             captureLoginSuccessEventSubject.setEventData(jsonArray);
@@ -190,55 +212,24 @@ SignInCompleteDialogFragment.NoticeDialogListener {
     }
 
     public class MyWebViewClient extends WebViewClient {
-        private static final String LOG_TAG = "MyWebViewClient";
-
         private WebAppInterface mWebAppJavascriptBridgeInterface;
 
-        /**
-         * @param mJavascriptBridgeInterface
-         */
-        public MyWebViewClient(
-                WebAppInterface webAppJavascriptBridgeInterface) {
+        public MyWebViewClient(WebAppInterface webAppJavascriptBridgeInterface) {
             super();
             mWebAppJavascriptBridgeInterface = webAppJavascriptBridgeInterface;
         }
 
-        /*
-         * (non-Javadoc)
-         * 
-         * @see
-         * android.webkit.WebViewClient#shouldOverrideUrlLoading(android.webkit
-         * .WebView, java.lang.String)
-         */
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-            boolean result = super.shouldOverrideUrlLoading(webView, url);
 
             if (isSchemeJanrain(url)) {
                 mWebAppJavascriptBridgeInterface.runJavascript();
+                return true;
             }
 
-            return result;
+            return super.shouldOverrideUrlLoading(webView, url);
         }
     }
-
-    /**
-     * Provides a hook for calling "alert" from Javascript. Useful for debugging
-     * your Javascript.
-     */
-    final class MyWebChromeClient extends WebChromeClient {
-        // @Override
-        // public boolean onJsAlert(WebView view, String url, String message,
-        // JsResult result) {
-        // Log.d(LOG_TAG, message);
-        // result.confirm();
-        // return true;
-        // }
-    }
-
-    private WebView mWebView;
-
-    private Handler mHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -259,24 +250,8 @@ SignInCompleteDialogFragment.NoticeDialogListener {
         WebAppInterface webAppJavascriptBridgeInterface = new WebAppInterface(this);
         mWebView.addJavascriptInterface(webAppJavascriptBridgeInterface, ANDROID_NS);
 
-        mWebView.setWebChromeClient(new MyWebChromeClient());
         mWebView.setWebViewClient(new MyWebViewClient(webAppJavascriptBridgeInterface));
 
-        final String url = getString(R.string.url_index);
-        mWebView.loadUrl(url);
-        // mWebView.loadUrl("file:///android_asset/demo.html");
-        // javascriptBridgeInterface.runJavascript();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public void onDialogDismiss(DialogFragment dialogFragment) {
-        finish();
+        mWebView.loadUrl("http://janrain.github.com/CaptureWebViewDemo/index.html");
     }
 }
