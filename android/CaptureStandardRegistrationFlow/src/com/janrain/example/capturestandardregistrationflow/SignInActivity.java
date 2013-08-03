@@ -86,24 +86,41 @@ public class SignInActivity extends Activity {
                 + "  window." + ANDROID_NS + ".bridgeCallback(t);"
                 + "})();";
 
-        public void runJavascript() {
-            mHandler.post(new Runnable() {
-                public void run() {
-                    mWebView.loadUrl(JAVASCRIPT);
-                }
-            });
-        }
-
         @JavascriptInterface
-        public void bridgeCallback(final String eventQueueString) {
-            dispatchEventQueue(eventQueueString);
+        public void bridgeCallback(String eventQueueString) {
+            Log.d(LOG_TAG, "bridgeCallback: " + eventQueueString.substring(0, Math.min(eventQueueString.length(), 50)));
+            JSONArray jsonArray;
+            try {
+                jsonArray = new JSONArray(eventQueueString);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "", e);
+                return;
+            }
+
+            for (int i = 0; i < jsonArray.length(); ++i) {
+                String argsUrl;
+                try {
+                    argsUrl = jsonArray.getString(i);
+                } catch (JSONException e) {
+                    Log.e(LOG_TAG, "Invalid Event", e);
+                    return;
+                }
+
+                if (argsUrl != null && isSchemeJanrain(argsUrl)) {
+                    parseAndDispatchEventUrl(argsUrl);
+                } else {
+                    Log.e(LOG_TAG, "Unknown scheme: " + argsUrl);
+                }
+            }
         }
 
         private void showSignInCompleteDialogFragment(final JSONArray jsonArray) {
-            String jsonArrayString = jsonArray.toString();
+            String jsonArrayString;
             try {
                 jsonArrayString = jsonArray.toString(4);
             } catch (JSONException e) {
+                Log.e(LOG_TAG, "", e);
+                return;
             }
 
             AlertDialog.Builder adb = new AlertDialog.Builder(SignInActivity.this);
@@ -121,11 +138,17 @@ public class SignInActivity extends Activity {
         private void parseAndDispatchEventUrl(final String argsUrl) {
             // argsUrl will look like:
             // janrain:eventNameHere?arguments=URL%20ENCODED%20JSON%20ARRAY%20HERE
-            if (argsUrl.charAt(SCHEME_JANRAIN.length()) != ':') return;
+            if (argsUrl.charAt(SCHEME_JANRAIN.length()) != ':') {
+                Log.e(LOG_TAG, "Missing colon in: " + argsUrl);
+                return;
+            }
 
             int start = SCHEME_JANRAIN.length() + 1;
             int indexQuestionMark = argsUrl.indexOf('?', start);
-            if (indexQuestionMark > start) return;
+            if (indexQuestionMark == -1) {
+                Log.e(LOG_TAG, "Missing question mark in: " + argsUrl);
+                return;
+            }
 
             String eventName = argsUrl.substring(start, indexQuestionMark);
             if (TextUtils.isEmpty(eventName)) {
@@ -133,80 +156,53 @@ public class SignInActivity extends Activity {
                 return;
             }
 
-            final String ON_CAPTURE_LOGIN_SUCCESS = "onCaptureLoginSuccess";
-
-            if (eventName.equals(ON_CAPTURE_LOGIN_SUCCESS)) processOnCaptureLoginSuccess(argsUrl);
+            if (eventName.equals("onCaptureLoginSuccess")) {
+                processOnCaptureLoginSuccess(argsUrl);
+            } else {
+                Log.d(LOG_TAG, "Unhandled event: " + eventName);
+            }
         }
 
         private void processOnCaptureLoginSuccess(String argsUrl) {
-            String jsonValue = null;
-
             final String uriString = Uri.decode(argsUrl);
-
-            if (uriString != null) {
-                final String ARGUMENTS = "arguments" + "=";
-
-                final int index = uriString.indexOf(ARGUMENTS);
-                if (index >= 0) {
-                    final int start = index + ARGUMENTS.length();
-                    jsonValue = uriString.substring(start);
-                }
+            if (uriString == null) {
+                Log.e(LOG_TAG, "url parsing error for: " + argsUrl);
+                return;
             }
 
-            JSONArray jsonArray = null;
+            final int index = uriString.indexOf("arguments=");
+            if (index < 0) {
+                Log.e(LOG_TAG, "missing argument param for: " + uriString);
+                return;
+            }
+
+            final int start = index + "arguments=".length();
+            String jsonValue = uriString.substring(start);
+
+            JSONArray jsonArray;
             try {
                 jsonArray = new JSONArray(jsonValue);
             } catch (JSONException e) {
+                Log.e(LOG_TAG, "", e);
+                return;
             }
 
-            if (jsonArray != null) {
-                showSignInCompleteDialogFragment(jsonArray);
-                CaptureStandardRegistrationFlowDemo appState = (CaptureStandardRegistrationFlowDemo) getApplication();
-                appState.getCaptureLoginSuccessEventSubject().setEventData(jsonArray);
-                appState.getCaptureLoginSuccessEventSubject().fireEvent();
-            } else {
-                Log.e(LOG_TAG, "Invalid JSON Array format");
-            }
-        }
-
-        private void dispatchEventQueue(final String eventQueueString) {
-            JSONArray jsonArray = null;
-            try {
-                jsonArray = new JSONArray(eventQueueString);
-            } catch (JSONException e) {
-            }
-
-            if (jsonArray == null) {
-                Log.e(LOG_TAG, "Empty event queue");
-            } else {
-                final int length = jsonArray.length();
-                for (int i = 0; i < length; ++i) {
-                    String argsUrl = null;
-                    try {
-                        argsUrl = jsonArray.getString(i);
-                    } catch (JSONException e) {
-                        Log.e(LOG_TAG, "Invalid Event");
-                    }
-                    if (argsUrl != null && isSchemeJanrain(argsUrl)) {
-                        parseAndDispatchEventUrl(argsUrl);
-                    }
-                }
-            }
+            showSignInCompleteDialogFragment(jsonArray);
+            CaptureStandardRegistrationFlowDemo appState = (CaptureStandardRegistrationFlowDemo) getApplication();
+            appState.getCaptureLoginSuccessEventSubject().setEventData(jsonArray);
+            appState.getCaptureLoginSuccessEventSubject().fireEvent();
         }
     }
 
     private class MyWebViewClient extends WebViewClient {
-        private WebAppInterface mWebAppJavascriptBridgeInterface;
-
-        private  MyWebViewClient(WebAppInterface webAppJavascriptBridgeInterface) {
-            super();
-            mWebAppJavascriptBridgeInterface = webAppJavascriptBridgeInterface;
-        }
+        private static final String TAG = "MyWebViewClient";
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, String url) {
+            Log.w(TAG, "shouldOverrideUrlLoading: " + url);
             if (isSchemeJanrain(url)) {
-                mWebAppJavascriptBridgeInterface.runJavascript();
+                Log.d(WebAppInterface.LOG_TAG, "Dispatching JS fetcher");
+                mWebView.loadUrl(WebAppInterface.JAVASCRIPT);
                 return true;
             }
 
@@ -242,11 +238,8 @@ public class SignInActivity extends Activity {
 
         webSettings.setUserAgentString(webSettings.getUserAgentString() + " janrainNativeAppBridgeEnabled");
 
-        WebAppInterface webAppJavascriptBridgeInterface = new WebAppInterface();
-        mWebView.addJavascriptInterface(webAppJavascriptBridgeInterface, ANDROID_NS);
-
-        mWebView.setWebViewClient(new MyWebViewClient(webAppJavascriptBridgeInterface));
-
+        mWebView.addJavascriptInterface(new WebAppInterface(), ANDROID_NS);
+        mWebView.setWebViewClient(new MyWebViewClient());
         mWebView.loadUrl("http://janrain.github.com/CaptureWebViewDemo/index.html");
     }
 }
