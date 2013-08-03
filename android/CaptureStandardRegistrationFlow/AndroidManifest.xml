@@ -54,7 +54,7 @@
         </activity>
 
         <activity
-            android:name="com.janrain.example.capturestandardregistrationflow.SignInActivity"
+            android:name=".WebViewActivity"
             android:label="Sign In" />
 
         <activity

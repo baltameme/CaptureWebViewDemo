@@ -53,13 +53,17 @@ public class MainActivity extends Activity  {
 
         signInButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, SignInActivity.class));
+                Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                intent.putExtra("url", WebViewActivity.SIGN_IN_URL);
+                startActivity(intent);
             }
         });
 
         editProfileButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                startActivity(new Intent(MainActivity.this, EditProfileActivity.class));
+                Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+                intent.putExtra("url", WebViewActivity.EDIT_PROFILE_URL);
+                startActivity(intent);
             }
         });
 

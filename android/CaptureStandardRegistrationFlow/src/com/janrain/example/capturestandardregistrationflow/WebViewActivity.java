@@ -51,9 +51,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-public class SignInActivity extends Activity {
+public class WebViewActivity extends Activity {
     private static final String ANDROID_NS = "demo";
     private static final String SCHEME_JANRAIN = "janrain";
+    public static final String SIGN_IN_URL = "http://janrain.github.com/CaptureWebViewDemo/index.html";
+    public static final String EDIT_PROFILE_URL = "http://janrain.github.com/CaptureWebViewDemo/edit-profile.html";
 
     private WebView mWebView;
     private Handler mHandler = new Handler();
@@ -123,13 +125,13 @@ public class SignInActivity extends Activity {
                 return;
             }
 
-            AlertDialog.Builder adb = new AlertDialog.Builder(SignInActivity.this);
+            AlertDialog.Builder adb = new AlertDialog.Builder(WebViewActivity.this);
             adb.setTitle("Sign-In Complete");
             adb.setMessage(jsonArrayString);
             adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
-                    SignInActivity.this.finish();
+                    WebViewActivity.this.finish();
                 }
             });
             adb.show();
@@ -200,6 +202,7 @@ public class SignInActivity extends Activity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, String url) {
             Log.w(TAG, "shouldOverrideUrlLoading: " + url);
+
             if (isSchemeJanrain(url)) {
                 Log.d(WebAppInterface.LOG_TAG, "Dispatching JS fetcher");
                 mWebView.loadUrl(WebAppInterface.JAVASCRIPT);
@@ -240,6 +243,11 @@ public class SignInActivity extends Activity {
 
         mWebView.addJavascriptInterface(new WebAppInterface(), ANDROID_NS);
         mWebView.setWebViewClient(new MyWebViewClient());
-        mWebView.loadUrl("http://janrain.github.com/CaptureWebViewDemo/index.html");
+        String intentUrl = getIntent().getExtras().getString("url");
+        if (intentUrl != null) {
+            mWebView.loadUrl(intentUrl);
+        } else {
+            mWebView.loadUrl(SIGN_IN_URL);
+        }
     }
 }
