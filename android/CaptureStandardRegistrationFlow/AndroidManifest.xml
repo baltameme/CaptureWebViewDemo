@@ -38,6 +38,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-sdk
+        android:minSdkVersion="7"
+        android:targetSdkVersion="12"/>
+
     <application
         android:label="Capture Standard Registration Flow"
         android:name="com.janrain.example.capturestandardregistrationflow.CaptureStandardRegistrationFlowDemo">

@@ -36,12 +36,9 @@ package com.janrain.example.capturestandardregistrationflow;
 import android.app.Application;
 
 public class CaptureStandardRegistrationFlowDemo extends Application {
-    private CaptureLoginSuccessEventSubject mCaptureLoginSuccessEventSubject = new CaptureLoginSuccessEventSubject();
+    private CaptureLoginSuccessEvent mCaptureLoginSuccessEvent = new CaptureLoginSuccessEvent();
 
-    /**
-     * @return the eventSubject
-     */
-    public CaptureLoginSuccessEventSubject getCaptureLoginSuccessEventSubject() {
-        return mCaptureLoginSuccessEventSubject;
+    public CaptureLoginSuccessEvent getCaptureLoginSuccessEventSubject() {
+        return mCaptureLoginSuccessEvent;
     }
 }

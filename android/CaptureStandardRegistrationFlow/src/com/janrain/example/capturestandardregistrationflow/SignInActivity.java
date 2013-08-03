@@ -36,10 +36,11 @@ package com.janrain.example.capturestandardregistrationflow;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.view.Window;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -76,7 +77,6 @@ public class SignInActivity extends Activity {
      * For more details, @see http://developer.android.com/guide/webapps/webview.html#BindingJavaScript
      */
     public class WebAppInterface {
-        private static final String SIGNIN_COMPLETE_TAG = "signin complete";
         private static final String LOG_TAG = "WebAppInterface";
 
         final static String JAVASCRIPT = "javascript:"
@@ -85,13 +85,6 @@ public class SignInActivity extends Activity {
                 + "  var t = JSON.stringify(createJanrainBridge.eventQueue);"
                 + "  window." + ANDROID_NS + ".bridgeCallback(t);"
                 + "})();";
-
-        private Context mContext = null;
-
-        /** Instantiate the interface and set the context */
-        public WebAppInterface(Context context) {
-            mContext = context;
-        }
 
         public void runJavascript() {
             mHandler.post(new Runnable() {
@@ -119,6 +112,7 @@ public class SignInActivity extends Activity {
             adb.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
+                    SignInActivity.this.finish();
                 }
             });
             adb.show();
@@ -127,62 +121,51 @@ public class SignInActivity extends Activity {
         private void parseAndDispatchEventUrl(final String argsUrl) {
             // argsUrl will look like:
             // janrain:eventNameHere?arguments=URL%20ENCODED%20JSON%20ARRAY%20HERE
+            if (argsUrl.charAt(SCHEME_JANRAIN.length()) != ':') return;
 
-            if (isSchemeJanrain(argsUrl)) {
-                String eventName = null;
+            int start = SCHEME_JANRAIN.length() + 1;
+            int indexQuestionMark = argsUrl.indexOf('?', start);
+            if (indexQuestionMark > start) return;
 
-                final int schemeJanrainLength = SCHEME_JANRAIN.length();
-                final char colon = argsUrl.charAt(schemeJanrainLength);
-                if (colon == ':') {
-                    final int start = schemeJanrainLength + 1;
-                    final int indexQuestionMark = argsUrl.indexOf('?', start);
-                    if (indexQuestionMark > start) {
-                        eventName = argsUrl.substring(start, indexQuestionMark);
-                    }
+            String eventName = argsUrl.substring(start, indexQuestionMark);
+            if (TextUtils.isEmpty(eventName)) {
+                Log.w(LOG_TAG, "Empty Event");
+                return;
+            }
+
+            final String ON_CAPTURE_LOGIN_SUCCESS = "onCaptureLoginSuccess";
+
+            if (eventName.equals(ON_CAPTURE_LOGIN_SUCCESS)) processOnCaptureLoginSuccess(argsUrl);
+        }
+
+        private void processOnCaptureLoginSuccess(String argsUrl) {
+            String jsonValue = null;
+
+            final String uriString = Uri.decode(argsUrl);
+
+            if (uriString != null) {
+                final String ARGUMENTS = "arguments" + "=";
+
+                final int index = uriString.indexOf(ARGUMENTS);
+                if (index >= 0) {
+                    final int start = index + ARGUMENTS.length();
+                    jsonValue = uriString.substring(start);
                 }
+            }
 
-                if (TextUtils.isEmpty(eventName)) {
-                    Log.w(LOG_TAG, "Empty Event");
-                } else {
-                    final String ON_CAPTURE_LOGIN_SUCCESS = "onCaptureLoginSuccess";
+            JSONArray jsonArray = null;
+            try {
+                jsonArray = new JSONArray(jsonValue);
+            } catch (JSONException e) {
+            }
 
-                    if (eventName.equals(ON_CAPTURE_LOGIN_SUCCESS)) {
-                        String jsonValue = null;
-
-                        final String uriString = Uri.decode(argsUrl);
-
-                        if (uriString != null) {
-                            final String ARGUMENTS = "arguments" + "=";
-
-                            final int index = uriString.indexOf(ARGUMENTS);
-                            if (index >= 0) {
-                                final int start = index + ARGUMENTS.length();
-                                jsonValue = uriString.substring(start);
-                            }
-                        }
-                        JSONArray jsonArray = null;
-                        try {
-                            jsonArray = new JSONArray(jsonValue);
-                        } catch (JSONException e) {
-                        }
-                        if (jsonArray != null) {
-                            showSignInCompleteDialogFragment(jsonArray);
-                            CaptureStandardRegistrationFlowDemo appState =
-                                    (CaptureStandardRegistrationFlowDemo) getApplication();
-                            final CaptureLoginSuccessEventSubject captureLoginSuccessEventSubject = 
-                                    appState.getCaptureLoginSuccessEventSubject();
-                            captureLoginSuccessEventSubject.setEventData(jsonArray);
-                            final Thread t = new Thread(captureLoginSuccessEventSubject);
-                            t.start();
-                        } else {
-                            Log.e(LOG_TAG, "Invalid JSON Array format");
-                        }
-                    } else {
-                        Log.i(LOG_TAG, "Ignored Event: " + eventName);
-                    }
-                }
+            if (jsonArray != null) {
+                showSignInCompleteDialogFragment(jsonArray);
+                CaptureStandardRegistrationFlowDemo appState = (CaptureStandardRegistrationFlowDemo) getApplication();
+                appState.getCaptureLoginSuccessEventSubject().setEventData(jsonArray);
+                appState.getCaptureLoginSuccessEventSubject().fireEvent();
             } else {
-                Log.w(LOG_TAG, "Unknown Scheme");
+                Log.e(LOG_TAG, "Invalid JSON Array format");
             }
         }
 
@@ -192,6 +175,7 @@ public class SignInActivity extends Activity {
                 jsonArray = new JSONArray(eventQueueString);
             } catch (JSONException e) {
             }
+
             if (jsonArray == null) {
                 Log.e(LOG_TAG, "Empty event queue");
             } else {
@@ -203,7 +187,7 @@ public class SignInActivity extends Activity {
                     } catch (JSONException e) {
                         Log.e(LOG_TAG, "Invalid Event");
                     }
-                    if (argsUrl != null) {
+                    if (argsUrl != null && isSchemeJanrain(argsUrl)) {
                         parseAndDispatchEventUrl(argsUrl);
                     }
                 }
@@ -211,17 +195,16 @@ public class SignInActivity extends Activity {
         }
     }
 
-    public class MyWebViewClient extends WebViewClient {
+    private class MyWebViewClient extends WebViewClient {
         private WebAppInterface mWebAppJavascriptBridgeInterface;
 
-        public MyWebViewClient(WebAppInterface webAppJavascriptBridgeInterface) {
+        private  MyWebViewClient(WebAppInterface webAppJavascriptBridgeInterface) {
             super();
             mWebAppJavascriptBridgeInterface = webAppJavascriptBridgeInterface;
         }
 
         @Override
         public boolean shouldOverrideUrlLoading(WebView webView, String url) {
-
             if (isSchemeJanrain(url)) {
                 mWebAppJavascriptBridgeInterface.runJavascript();
                 return true;
@@ -229,11 +212,24 @@ public class SignInActivity extends Activity {
 
             return super.shouldOverrideUrlLoading(webView, url);
         }
+
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            super.onPageStarted(view, url, favicon);
+            setProgressBarIndeterminateVisibility(true);
+        }
+
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            super.onPageFinished(view, url);
+            setProgressBarIndeterminateVisibility(false);
+        }
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_signin);
 
         mWebView = (WebView) findViewById(R.id.webview);
@@ -244,10 +240,9 @@ public class SignInActivity extends Activity {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setSupportZoom(false);
 
-        final String userAgent = webSettings.getUserAgentString();
-        webSettings.setUserAgentString("janrainNativeAppBridgeEnabled" + userAgent);
+        webSettings.setUserAgentString(webSettings.getUserAgentString() + " janrainNativeAppBridgeEnabled");
 
-        WebAppInterface webAppJavascriptBridgeInterface = new WebAppInterface(this);
+        WebAppInterface webAppJavascriptBridgeInterface = new WebAppInterface();
         mWebView.addJavascriptInterface(webAppJavascriptBridgeInterface, ANDROID_NS);
 
         mWebView.setWebViewClient(new MyWebViewClient(webAppJavascriptBridgeInterface));

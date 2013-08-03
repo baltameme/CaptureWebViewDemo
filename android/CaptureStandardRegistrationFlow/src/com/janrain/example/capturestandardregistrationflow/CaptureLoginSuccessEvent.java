@@ -45,14 +45,14 @@ import org.json.JSONArray;
  * http://en.wikipedia.org/wiki/Observer_pattern
  */
 
-public class CaptureLoginSuccessEventSubject extends Observable implements Runnable {
+public class CaptureLoginSuccessEvent extends Observable {
     private JSONArray mJsonArray;
 
     public void setEventData(final JSONArray jsonArray) {
         mJsonArray = jsonArray;
     }
 
-    public void run() {
+    public void fireEvent() {
         setChanged();
         notifyObservers(mJsonArray);
     }
