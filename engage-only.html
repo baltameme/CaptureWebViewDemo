@@ -15,38 +15,28 @@
         <script>
             (function() {
                 if (typeof window.janrain !== 'object') window.janrain = {};
-                if (typeof window.janrain.settings !== 'object') window.janrain.settings = {};
+                window.janrain.settings = {};
 
                 /* _______________ can edit below this line _______________ */
 
-                janrain.settings.tokenUrl = 'http://localhost:8000';
+                janrain.settings.appUrl = 'https://capturewidget.rpxnow.com';
                 janrain.settings.type = 'embed';
-                janrain.settings.appId = 'fljoccdidchbagcgjnid';
-                janrain.settings.appUrl = 'https://bmock.rpxnow.com';
-                janrain.settings.providers = ["facebook","twitter","google","aol"];
+                janrain.settings.tokenUrl = 'http://localhost/token-url';
+                janrain.settings.format = 'two column';
+                janrain.settings.providers = ['facebook','twitter','yahoo','google','linkedin','paypal'];
                 janrain.settings.providersPerPage = '4';
-                janrain.settings.format = 'one column';
                 janrain.settings.actionText = ' ';
-                janrain.settings.showAttribution = false;
-                janrain.settings.fontColor = '#000000';
-                janrain.settings.fontFamily = 'Helvetica,Lucida Grande,Verdana,sans-serif';
-                janrain.settings.backgroundColor = '#ffffff';
-                janrain.settings.width = '160';
+                janrain.settings.width = '300';
                 janrain.settings.borderColor = '#ffffff';
-                janrain.settings.borderRadius = '0';    janrain.settings.buttonBorderColor = '#dedede';
-                janrain.settings.buttonBorderRadius = '2';
-                janrain.settings.buttonBackgroundStyle = 'gradient';
-                janrain.settings.language = '';
-                janrain.settings.linkClass = 'janrainEngage';
+                janrain.settings.backgroundColor = '#ffffff';
+                janrain.settings.language = 'en';
 
                 /* _______________ can edit above this line _______________ */
 
 
-                //       DO NOT CHANGE THESE SETTINGS
-                // ========================================
+                janrain.settings.packages = ['login'];
                 janrain.settings.popup = false;
-                janrain.settings.tokenAction = 'hybrid';
-                // ========================================
+                janrain.settings.tokenAction = 'url';
 
                 function isReady() { janrain.ready = true; };
                 if (document.addEventListener) {
@@ -60,9 +50,9 @@
                 e.id = 'janrainAuthWidget';
 
                 if (document.location.protocol === 'https:') {
-                  e.src = 'https://rpxnow.com/js/lib/bmock/engage.js';
+                  e.src = 'https://rpxnow.com/load/capturewidget';
                 } else {
-                  e.src = 'http://widget-cdn.rpxnow.com/js/lib/bmock/engage.js';
+                  e.src = 'http://widget-cdn.rpxnow.com/load/capturewidget';
                 }
 
                 var s = document.getElementsByTagName('script')[0];
