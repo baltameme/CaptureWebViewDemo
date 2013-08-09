@@ -1,6 +1,5 @@
 #import "CaptureWebViewController.h"
 #import "debug_log.h"
-#import "stdarg.h"
 
 @implementation NSString (Janrain_Url_Escaping)
 - (NSString *)stringByUrlEncoding
@@ -24,7 +23,7 @@
 @interface CaptureWebViewController ()
 
 @property(strong) UIWebView *webView;
-@property(weak) id<CaptureWebViewControllerDelegate> captureDelegate;
+@property(weak) id<CaptureWebViewControllerDelegate> captureWebViewDelegate;
 @property(nonatomic, strong) NSString *activePageName;
 
 @end
@@ -60,7 +59,7 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 }
 
 @synthesize webView;
-@synthesize captureDelegate;
+@synthesize captureWebViewDelegate;
 @synthesize activePageName;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -69,16 +68,21 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self)
     {
-        self.jsEventHandlers = [NSMutableDictionary dictionary];
-        [self.jsEventHandlers setObject:[NSMutableArray array] forKey:@"onCaptureLoginSuccess"];
-        [[self.jsEventHandlers objectForKey:@"onCaptureLoginSuccess"] addObject:[^(id eventArgs){
-            NSDictionary *result = [eventArgs objectAtIndex:0];
-            [self sendOptionalDelegateMessage:@selector(signInDidSucceedWithAccessToken:) withArgument:result];
-        } copy]];
-
-        self.captureDelegate = delegate;
+        self.captureWebViewDelegate = delegate;
     }
     return self;
+}
+
+- (void)addEventHandler:(void (^)(NSArray *))handler eventName:(NSString *)eventName
+{
+    if (!self.jsEventHandlers) self.jsEventHandlers = [NSMutableDictionary dictionary];
+
+    if (![self.jsEventHandlers objectForKey:eventName])
+    {
+        [self.jsEventHandlers setObject:[NSMutableArray array] forKey:eventName];
+    }
+
+    [[self.jsEventHandlers objectForKey:eventName] addObject:handler];
 }
 
 - (void)loadView
@@ -193,9 +197,9 @@ static NSDictionary *JR_CAPTURE_WEBVIEW_PAGES;
 
 - (void)sendOptionalDelegateMessage:(SEL)selector withArgument:(id)argument
 {
-    if ([captureDelegate respondsToSelector:selector])
+    if ([captureWebViewDelegate respondsToSelector:selector])
     {
-        [captureDelegate performSelector:selector withObject:argument];
+        [captureWebViewDelegate performSelector:selector withObject:argument];
     }
 }
 

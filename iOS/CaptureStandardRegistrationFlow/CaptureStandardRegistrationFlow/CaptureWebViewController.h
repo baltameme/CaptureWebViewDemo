@@ -3,7 +3,7 @@
 
 @protocol CaptureWebViewControllerDelegate <NSObject>
 @optional
-- (void)signInDidSucceedWithAccessToken:(NSDictionary *)accessToken;
+- (void)signInDidSucceedWithAccessToken:(NSString *)accessToken;
 @end
 
 @interface CaptureWebViewController : UIViewController <UIWebViewDelegate>
@@ -15,6 +15,8 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
           andDelegate:(id<CaptureWebViewControllerDelegate>)delegate;
+
+- (void)addEventHandler:(void (^)(NSArray *))handler eventName:(NSString *)eventName;
 
 - (void)pushFlow:(id)flow ontoNavigationController:(UINavigationController *)nc;
 

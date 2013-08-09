@@ -158,6 +158,7 @@ public class WebViewActivity extends Activity {
                 return;
             }
 
+
             if (eventName.equals("onCaptureLoginSuccess")) {
                 processOnCaptureLoginSuccess(argsUrl);
             } else {

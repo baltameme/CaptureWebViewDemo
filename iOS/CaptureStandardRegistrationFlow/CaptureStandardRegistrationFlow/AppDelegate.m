@@ -21,16 +21,28 @@
     DemoNavRootViewController *demoNavRoot = [[DemoNavRootViewController alloc] initWithNibName:nil bundle:nil];
     DemoNavController *demoNav = [[DemoNavController alloc] initWithRootViewController:demoNavRoot];
     self.captureController = [[CaptureWebViewController alloc] initWithNibName:nil bundle:nil andDelegate:self];
+    [self registerSignInHandler];
+
     self.window.rootViewController = demoNav;
     [self.window makeKeyAndVisible];
     return YES;
 }
 
-- (void)signInDidSucceedWithAccessToken:(NSDictionary *)signInResult
+- (void)registerSignInHandler
+{
+    [self.captureController addEventHandler:^(NSArray *eventArgs)
+    {
+        NSDictionary *result = [eventArgs objectAtIndex:0]; // the sign-in result is the first argument of this event
+        NSString *token = [result objectForKey:@"accessToken"];
+        [self signInDidSucceedWithAccessToken:token];
+    }                             eventName:@"onCaptureLoginSuccess"];
+}
+
+- (void)signInDidSucceedWithAccessToken:(NSString *)accessToken
 {
     [((UINavigationController *) self.window.rootViewController) popViewControllerAnimated:YES];
-    self.accessToken = [signInResult objectForKey:@"accessToken"];
-    [[[UIAlertView alloc] initWithTitle:@"Sign-in complete" message:[signInResult description] delegate:nil
+    self.accessToken = accessToken;
+    [[[UIAlertView alloc] initWithTitle:@"Sign-in complete" message:[accessToken description] delegate:nil
                       cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
 }
 

@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		C14240D4B159991757C18524 /* CaptureWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C1424F1A9165F0DF118DB1C6 /* CaptureWebViewController.m */; };
 		C142417D2D397BA28ADE011B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1424A2874BEAD92AF37F58C /* UIKit.framework */; };
-		C1424473A251AC09EA20290B /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = C1424AE4D9C4A96CA9414A29 /* README.md */; };
 		C14244AE48A2EEC0D28EC981 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = C14242C52AE6165B44FDBA4F /* InfoPlist.strings */; };
 		C142477DDEA3300EB8AAC03F /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = C1424D5BD9A475046BE4F9C0 /* AppDelegate.m */; };
 		C14247809A4DBBCA0D51F11F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1424CD5FDA4553CAD60C59E /* CoreGraphics.framework */; };
@@ -38,7 +37,6 @@
 		C142497F291EBCBAC59A6F7B /* DemoNavRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoNavRootViewController.h; sourceTree = "<group>"; };
 		C1424981CD89A242B553D5E9 /* InfoPlist.strings */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; path = InfoPlist.strings; sourceTree = "<group>"; };
 		C1424A2874BEAD92AF37F58C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		C1424AE4D9C4A96CA9414A29 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = file.md; path = README.md; sourceTree = "<group>"; };
 		C1424B07A3AA38E7C503B094 /* DemoNavController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoNavController.m; sourceTree = "<group>"; };
 		C1424CD5FDA4553CAD60C59E /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		C1424D5BD9A475046BE4F9C0 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -126,7 +124,6 @@
 				C1424C34A3C31248CC1115FB /* Products */,
 				C142417A61F009E20907AB86 /* Frameworks */,
 				C142463A373721DBD31ACCFF /* CaptureStandardRegistrationFlow */,
-				C1424AE4D9C4A96CA9414A29 /* README.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -182,7 +179,6 @@
 				C14249CD63325A937D07004F /* Default@2x.png in Resources */,
 				C1424A07FAFEE156C20E2510 /* Default-568h@2x.png in Resources */,
 				C142497B13BDE07C999569D1 /* InfoPlist.strings in Resources */,
-				C1424473A251AC09EA20290B /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
