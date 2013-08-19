@@ -43,8 +43,6 @@ import org.json.JSONException;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
@@ -58,21 +56,6 @@ public class WebViewActivity extends Activity {
     public static final String EDIT_PROFILE_URL = "http://janrain.github.com/CaptureWebViewDemo/edit-profile.html";
 
     private WebView mWebView;
-    private Handler mHandler = new Handler();
-
-    private static boolean isSchemeJanrain(final String url) {
-        boolean result = false;
-        if (!TextUtils.isEmpty(url)) {
-            final Uri uri = Uri.parse(url);
-            final String scheme = uri.getScheme();
-            if (!TextUtils.isEmpty(scheme)) {
-                if (scheme.equalsIgnoreCase(SCHEME_JANRAIN)) {
-                    result = true;
-                }
-            }
-        }
-        return result;
-    }
 
     /**
      * WebAppInterface class is used to Java <-> JavaScript binding for the WebView
@@ -100,18 +83,28 @@ public class WebViewActivity extends Activity {
             }
 
             for (int i = 0; i < jsonArray.length(); ++i) {
-                String argsUrl;
-                try {
-                    argsUrl = jsonArray.getString(i);
-                } catch (JSONException e) {
-                    Log.e(LOG_TAG, "Invalid Event", e);
-                    return;
+                String argsUrl = jsonArray.optString(i);
+                // argsUrl will look like:
+                // janrain:eventNameHere?arguments=URL%20ENCODED%20JSON%20ARRAY%20OF%20ARGUMENTS%20HERE
+
+                if (argsUrl == null) {
+                    Log.e(LOG_TAG, "bad URL: " + argsUrl);
+                    continue;
                 }
 
-                if (argsUrl != null && isSchemeJanrain(argsUrl)) {
-                    parseAndDispatchEventUrl(argsUrl);
+                Uri parsedUri = Uri.parse(argsUrl);
+                if (!"janrain".equals(parsedUri.getScheme())) {
+                    Log.e(LOG_TAG, "bad URI: " + parsedUri);
+                    continue;
+                }
+
+                // XXX Stick a slash in it so it's "hierarchical", according to Uri, so we can use the query param
+                // functions
+                parsedUri = Uri.parse(parsedUri.getScheme() + ":/" + parsedUri.getEncodedSchemeSpecificPart());
+                if ("onCaptureLoginSuccess".equals(parsedUri.getLastPathSegment())) {
+                    processOnCaptureLoginSuccess(parsedUri);
                 } else {
-                    Log.e(LOG_TAG, "Unknown scheme: " + argsUrl);
+                    Log.d(LOG_TAG, "Unhandled event: " + parsedUri.getLastPathSegment());
                 }
             }
         }
@@ -137,37 +130,8 @@ public class WebViewActivity extends Activity {
             adb.show();
         }
 
-        private void parseAndDispatchEventUrl(final String argsUrl) {
-            // argsUrl will look like:
-            // janrain:eventNameHere?arguments=URL%20ENCODED%20JSON%20ARRAY%20HERE
-            if (argsUrl.charAt(SCHEME_JANRAIN.length()) != ':') {
-                Log.e(LOG_TAG, "Missing colon in: " + argsUrl);
-                return;
-            }
-
-            int start = SCHEME_JANRAIN.length() + 1;
-            int indexQuestionMark = argsUrl.indexOf('?', start);
-            if (indexQuestionMark == -1) {
-                Log.e(LOG_TAG, "Missing question mark in: " + argsUrl);
-                return;
-            }
-
-            String eventName = argsUrl.substring(start, indexQuestionMark);
-            if (TextUtils.isEmpty(eventName)) {
-                Log.w(LOG_TAG, "Empty Event");
-                return;
-            }
-
-
-            if (eventName.equals("onCaptureLoginSuccess")) {
-                processOnCaptureLoginSuccess(argsUrl);
-            } else {
-                Log.d(LOG_TAG, "Unhandled event: " + eventName);
-            }
-        }
-
-        private void processOnCaptureLoginSuccess(String argsUrl) {
-            final Uri parsedUri = Uri.parse(argsUrl);
+        private void processOnCaptureLoginSuccess(Uri parsedUri) {
+            Log.d(LOG_TAG, "WebAppInterface#processOnCaptureLoginSuccess");
 
             String jsonEncodedArgs = parsedUri.getQueryParameter("arguments");
 
@@ -193,8 +157,9 @@ public class WebViewActivity extends Activity {
         public boolean shouldOverrideUrlLoading(WebView webView, String url) {
             Log.w(TAG, "shouldOverrideUrlLoading: " + url);
 
-            if (isSchemeJanrain(url)) {
-                Log.d(WebAppInterface.LOG_TAG, "Dispatching JS fetcher");
+            Uri parsedUrl = Uri.parse(url);
+            if ("janrain".equals(parsedUrl.getScheme())) {
+                Log.d(TAG, "Dispatching JS fetcher");
                 mWebView.loadUrl(WebAppInterface.JAVASCRIPT);
                 return true;
             }
