@@ -42,7 +42,7 @@
 {
     [((UINavigationController *) self.window.rootViewController) popViewControllerAnimated:YES];
     self.accessToken = accessToken;
-    [[[UIAlertView alloc] initWithTitle:@"Sign-in complete" message:[accessToken description] delegate:nil
+    [[[UIAlertView alloc] initWithTitle:@"Sign-in complete" message:accessToken delegate:nil
                       cancelButtonTitle:@"Dismiss" otherButtonTitles:nil] show];
 }
 

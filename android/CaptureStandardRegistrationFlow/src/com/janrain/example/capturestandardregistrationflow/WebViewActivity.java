@@ -167,24 +167,13 @@ public class WebViewActivity extends Activity {
         }
 
         private void processOnCaptureLoginSuccess(String argsUrl) {
-            final String uriString = Uri.decode(argsUrl);
-            if (uriString == null) {
-                Log.e(LOG_TAG, "url parsing error for: " + argsUrl);
-                return;
-            }
+            final Uri parsedUri = Uri.parse(argsUrl);
 
-            final int index = uriString.indexOf("arguments=");
-            if (index < 0) {
-                Log.e(LOG_TAG, "missing argument param for: " + uriString);
-                return;
-            }
-
-            final int start = index + "arguments=".length();
-            String jsonValue = uriString.substring(start);
+            String jsonEncodedArgs = parsedUri.getQueryParameter("arguments");
 
             JSONArray jsonArray;
             try {
-                jsonArray = new JSONArray(jsonValue);
+                jsonArray = new JSONArray(jsonEncodedArgs);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, "", e);
                 return;
